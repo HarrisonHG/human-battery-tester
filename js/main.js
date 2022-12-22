@@ -34,6 +34,8 @@ function save_events() {
     localStorage.setItem("events", event_list.to_json());
     localStorage.setItem("energy_before_sleep", current_energy_level);
     localStorage.setItem("sleep_event", sleep_event.to_json());
+
+    alert("Saved!");
 }
 
 // Load events from the user's local storage
@@ -117,10 +119,10 @@ function clear_all_events() {
     localStorage.removeItem("sleep_event");
 
     // Clear the UI
-    document.getElementById("eventsTable").innerHTML =
+    document.getElementById("eventsTable").tbody.innerHTML =
     '<tr class="d-flex">' + 
     '<td class="col"><input type="text" class="form-control eventNames" list="previousEvents" placeholder="What happened, bro?"></td>' +
-    '<td class="col-2"><input type="number" class="form-control eventValues" placeholder="auto"></td>' +
+    '<td class="col-2"><input type="number" class="form-control eventValues" placeholder="auto" min="-100" max="100"></td>' +
     '<td class="col-1"><!-- No removing the first row. --></td>' +
     '</tr>';
     document.getElementById("batteryLevelStart").value = "50";
@@ -171,7 +173,7 @@ function calculate_energy() {
 
     // Top 3 positive events
     let top_three_table = document.getElementById("rechargeTable");
-    top_three_table.innerHTML = "";
+    top_three_table.children[1].innerHTML = "";
     if (top_three.length === 0) {
         top_three_table.innerHTML = 
             "<tr><td colspan='2'>You're not a single-use battery bro. You're worth " + 
@@ -189,7 +191,7 @@ function calculate_energy() {
 
     // Top 3 negative events
     let bottom_three_table = document.getElementById("costTable");
-    bottom_three_table.innerHTML = "";
+    bottom_three_table.children[1].innerHTML = "";
     if (bottom_three.length === 0) {
         bottom_three_table.innerHTML = 
             "<tr><td colspan='2'>You have no draining events? Sick! How do you manage it, man?" + 
@@ -208,7 +210,7 @@ function calculate_energy() {
 
     // Top 3 impactful events
     let top_three_impact_table = document.getElementById("impactTable");
-    top_three_impact_table.innerHTML = "";
+    top_three_impact_table.children[1].innerHTML = "";
     if (top_three_impact.length === 0) {
         top_three_impact_table.innerHTML = 
             "<tr><td colspan='2'>Nothing happened. At all. Ever.</td></tr>";
@@ -228,7 +230,7 @@ function calculate_energy() {
 
     // Finally, display a table of events and energy levels
     let result_events_table = document.getElementById("generalResultTable");
-    result_events_table.innerHTML = "";
+    result_events_table.children[1].innerHTML = "";
     ordered_events.forEach(function(event) {
         let row = result_events_table.insertRow(-1);
         let name_cell = row.insertCell(0);

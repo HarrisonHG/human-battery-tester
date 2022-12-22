@@ -15,8 +15,17 @@ export class Event {
             this.fixed_value = value;
         }
         else {
-            this.values.push(value);
             this.fixed_value = null;
+
+            // Value could be array or number.
+            if (Array.isArray(value)) {
+                for (let key in value) {
+                    this.add_value(value[key]);
+                }
+            }
+            else {
+                this.add_value(value);
+            }            
         }
 
         this.note = "";
