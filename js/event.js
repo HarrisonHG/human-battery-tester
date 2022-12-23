@@ -1,4 +1,3 @@
-
 // The maximum number of values to store for an event
 let EVENT_MEMORY_SIZE = 10;
 

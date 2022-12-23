@@ -1,5 +1,8 @@
 import { Event } from './event.js';
 
+// How many measurements of an event should we have before we can begin to trust it?
+let EVENT_CONFIDENT_THRESHOLD = 5;
+
 export class EventList {
 
     // ----- Constructors -----
@@ -83,11 +86,23 @@ export class EventList {
         return names;
     }
 
+    // Get a list of events with "auto" as the last value
     get_events_in_need_of_values() {
         let events = [];
         for (let event in this.events) {
             if (this.events[event].values.slice(-1)[0] == "auto")
                 events.push(this.events[event]);
+        }
+        return events;
+    }
+
+    // Return a new EventList that ONLY contains events that have enough values to be confident about
+    get_confident_events() {
+        let events = new EventList;
+        for (let event in this.events) {
+            if (this.events[event].values.length >= EVENT_CONFIDENT_THRESHOLD) {
+                events.add_event(this.events[event].name)
+            }
         }
         return events;
     }

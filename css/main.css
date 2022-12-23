@@ -1,0 +1,5 @@
+input[type="range"]::after {
+    content: attr(data-value);
+    margin-right: -50px;
+    padding-left: 10px;
+  }

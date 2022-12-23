@@ -35,7 +35,11 @@ function save_events() {
     localStorage.setItem("energy_before_sleep", current_energy_level);
     localStorage.setItem("sleep_event", sleep_event.to_json());
 
-    alert("Saved!");
+    calculate_energy(true);
+
+    document.getElementById("saveEventsBtn").disabled=true;
+
+    alert("Saved!", "success");
 }
 
 // Load events from the user's local storage
@@ -65,12 +69,16 @@ export function load_events() {
 
     console.log("Total number of events: " + event_list.get_event_count());
 
-
-
     // Update the UI
     set_ui_on_load();
+
+    // Confirmation details
+    let event_count = event_list.get_event_count();
+    if (event_count > 0)
+        alert("Loaded " + event_list.get_event_count() + " ativities.", 'success');
 }
 
+// Append a new row to the events table
 function add_event_row() {
     let table = document.getElementById("eventsTable");
     let row = table.insertRow(-1);
@@ -100,6 +108,58 @@ function add_event_row() {
 //     row.parentNode.removeChild(row);
 // }
 
+// Download a copy of the user's data
+function create_backup() {
+    // Package some data, then download it as a file.
+    let backup = {
+        "events": event_list.to_json(),
+        "energy_before_sleep": energy_before_sleep,
+        "sleep_event": sleep_event.to_json()
+    };
+    let backup_json = JSON.stringify(backup);
+    let backup_blob = new Blob([backup_json], {type: "application/json"});
+    let backup_url = URL.createObjectURL(backup_blob);
+    let backup_link = document.createElement("a");
+    backup_link.href = backup_url;
+    backup_link.download = "energy_tracker_backup.json";
+    backup_link.click();
+}
+
+// Restore the user's data from a backup file
+function restore_backup() {
+    // Since this overwrites the local storage, let's double check
+    if (!confirm(
+        "Are you sure you want to restore from a backup? This will overwrite your current data."
+        )) {
+        return;
+    }
+
+    // Ask the user for a file
+    let file_input = document.createElement("input");
+    file_input.type = "file";
+    file_input.accept = "application/json";
+    file_input.onchange = function() {
+        let file = file_input.files[0];
+        let reader = new FileReader();
+        reader.onload = function() {
+            try {
+                let backup = JSON.parse(reader.result);
+                localStorage.setItem("events", backup.events);
+                localStorage.setItem("energy_before_sleep", backup.energy_before_sleep);
+                localStorage.setItem("sleep_event", backup.sleep_event);
+                load_events();
+            }
+            catch (e) {
+                alert("Can't read that file. Make sure it's a valid backup file.");
+            }
+        }
+        reader.readAsText(file);
+    }
+    file_input.click();
+    
+    document.getElementById("saveEventsBtn").disabled=false;
+}
+
 function clear_all_events() {
 
     // Confirm the user wants to YEET ALL OF THEIR DATA INTO THE ABYSS
@@ -119,7 +179,7 @@ function clear_all_events() {
     localStorage.removeItem("sleep_event");
 
     // Clear the UI
-    document.getElementById("eventsTable").tbody.innerHTML =
+    document.getElementById("eventsTable").children[1].innerHTML =
     '<tr class="d-flex">' + 
     '<td class="col"><input type="text" class="form-control eventNames" list="previousEvents" placeholder="What happened, bro?"></td>' +
     '<td class="col-2"><input type="number" class="form-control eventValues" placeholder="auto" min="-100" max="100"></td>' +
@@ -129,13 +189,26 @@ function clear_all_events() {
     document.getElementById("batteryLevelEnd").value = "50";
     document.getElementById("yesterdaysEnergyMention").innerHTML = "";
     document.getElementById("previousEvents").innerHTML = "";
+
+    document.getElementById("saveEventsBtn").disabled=false;
 }
 
 // Time to calculate the user's energy expendature
-function calculate_energy() {
+function calculate_energy(confident_only = false) {
+
+    let local_event_list = event_list;
+    if (confident_only) {
+        let local_event_list = event_list.get_confident_events();
+        if (local_event_list.get_event_count() == 0) {
+            document.getElementById("resultAreaFillerText").innerHTML = 
+            "We don't have enough data to reliably calculate your energy expendature yet. " +
+                "Come back each day and we'll keep measuring your activity costs.";
+            return;
+        }
+    }
 
     // Get the top 3 positive events
-    let ordered_events = event_list.get_events_by_value();
+    let ordered_events = local_event_list.get_events_by_value();
     let top_three = ordered_events.slice(0, 3);
     for (let i = 0; i < top_three.length; i++) {
         if (top_three[i].estimate_value() <= 0) {
@@ -163,7 +236,7 @@ function calculate_energy() {
     }
 
     // Get the top 3 impactful events
-    let top_three_impact = event_list.get_events_by_impact();
+    let top_three_impact = local_event_list.get_events_by_impact();
     top_three_impact = top_three_impact.slice(0, 3);
 
     // What's the average sleep value?
@@ -240,6 +313,7 @@ function calculate_energy() {
     });
 
     document.getElementById("resultArea").hidden = false;
+    document.getElementById("resultAreaBlank").hidden = true;
 }
 
 // ----- Utilities & UI -----
@@ -333,5 +407,45 @@ function update_ui() {
 document.getElementById("saveEventsBtn").addEventListener("click", save_events);
 document.getElementById("addEventBtn").addEventListener("click", add_event_row);
 document.getElementById("clearEventsBtn").addEventListener("click", clear_all_events);
-document.getElementById("calculateBtn").addEventListener("click", calculate_energy);
+//document.getElementById("calculateBtn").addEventListener("click", calculate_energy, true);
+document.getElementById("createBackupBtn").addEventListener("click", create_backup);
+document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
 
+// We want to do a quick save whenever the user leaves the page
+window.addEventListener("beforeunload", function (e) {
+    save_events();
+});
+
+// ----- #justbootstrapthings -----
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+// Bootstrap's alerts
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const alert = (message, type) => {
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible fade show js-alert" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close alert-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('')
+
+  alertPlaceholder.append(wrapper);
+
+  if (document.querySelector('.alert-close')) {
+    document.querySelectorAll('.alert-close').forEach(function($el) {
+      setTimeout(() => {
+        $el.click();
+      }, 2000);
+    });
+  }
+}
+
+// Bootstrap's range inputs
+document.querySelectorAll('input[type=range]').forEach(e => {
+    e.setAttribute('data-value', e.value);
+    e.addEventListener('input', () => {
+      e.setAttribute('data-value', e.value);
+    });
+  });
