@@ -3,3 +3,12 @@ input[type="range"]::after {
     margin-right: -50px;
     padding-left: 10px;
   }
+
+.eventNumber {
+  width: 3em !important;
+}
+
+.input-group-select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

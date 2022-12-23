@@ -35,7 +35,7 @@ function save_events() {
     localStorage.setItem("energy_before_sleep", current_energy_level);
     localStorage.setItem("sleep_event", sleep_event.to_json());
 
-    calculate_energy(true);
+    show_energy_results(true);
 
     document.getElementById("saveEventsBtn").disabled=true;
 
@@ -91,7 +91,19 @@ function add_event_row() {
     value_cell.classList.add("col-2");
     remove_cell.classList.add("col-1");
 
-    name_cell.innerHTML = "<input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>";
+    name_cell.innerHTML = 
+        "<div class='input-group'>" +
+        "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
+        "   <div class='input-group-append'>" +
+        "       <select class='custom-select input-group-select'>" +
+        "           <option value='1' selected>Once</option>" +
+        "           <option value='2'>Twice</option>" +
+        "           <option value='3'>Thrice</option>" +
+        "           <option value='5'>A lot!</option>" +
+        "       </select>" +
+        "   </div>" +
+        "</div>";
+
     value_cell.innerHTML = "<input type='number' class='eventValues form-control' placeholder='auto'>";
     remove_cell.innerHTML = "<button class='removeEventBtn form-control btn-danger' onclick=\"remove_event_row(this);\">-</button>";
 
@@ -99,7 +111,6 @@ function add_event_row() {
     // Add an event listener to the remove button
     // let remove_btn = remove_cell.getElementsByClassName("removeEventBtn")[0];
     // remove_btn.addEventListener("click", remove_event_row (row));
-
 }
 
 /// TODO: Fix this. Make it work here instead of in the HTML.
@@ -194,7 +205,7 @@ function clear_all_events() {
 }
 
 // Time to calculate the user's energy expendature
-function calculate_energy(confident_only = false) {
+function show_energy_results(confident_only = false) {
 
     let local_event_list = event_list;
     if (confident_only) {
@@ -333,6 +344,7 @@ function parse_ui() {
     
     // Events
     let event_names = document.getElementsByClassName("eventNames");
+    let event_numbers = document.getElementsByClassName("eventNumbers");
     let event_values = document.getElementsByClassName("eventValues");
     for (let i = 0; i < event_names.length; i++) {
 
@@ -341,13 +353,18 @@ function parse_ui() {
             continue;
         }
 
-        // If the event value is empty, add it as an auto event and we'll calculate it later
-        if (event_values[i].value == "") {
-            event_list.add_or_update_event(event_names[i].value, "auto");
+        for (let j = 0; j < event_numbers[i]; j++) {
+            // If the event value is empty, add it as an auto event and we'll calculate it later
+            if (event_values[i].value == "") {
+                /// TODO: Handle auto events multiple layers deep
+                event_list.add_or_update_event(event_names[i].value, "auto");
+            }
+            else {
+                event_list.add_or_update_event(event_names[i].value, event_values[i].value);
+            }
         }
-        else {
-            event_list.add_or_update_event(event_names[i].value, event_values[i].value);
-        }
+
+
     }
 }
 
@@ -421,15 +438,17 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
 // Bootstrap's alerts
-const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 const alert = (message, type) => {
   const wrapper = document.createElement('div')
   wrapper.innerHTML = [
-    `<div class="alert alert-${type} alert-dismissible fade show js-alert" role="alert">`,
-    `   <div>${message}</div>`,
-    '   <button type="button" class="btn-close alert-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    `<div class="alert alert-${type} alert-dismissible fade show js-alert" role="alert">` +
+    `   <div>${message}</div>` +
+    '   <button type="button" class="close alert-close" data-dismiss="alert" aria-label="Close">' +
+    '       <span aria-hidden="true">&times;</span>' +
+    '   </button>' +
     '</div>'
-  ].join('')
+  ].join('');
 
   alertPlaceholder.append(wrapper);
 
