@@ -1,3 +1,9 @@
+import { Profile } from './profile.js';
+
+
+export calculate (Profile)
+
+
 // Simple class to hold equations that havent been solved yet
 class incomplete_equation {
     constructor(names, values, result) {
@@ -58,10 +64,28 @@ export class Calculator {
         }
         let combinations = [];
 
+        // A list of names that we have solved for
+        class SolvedName {
+            constructor(name, value) {
+                this.name = name;
+                this.value = value;
+            }
+        }
+        let solved_names = [];
+
         // For each equation...
         for (let i = 0; i < this.incomplete_combinations.length; i++) {
                 
-            // F
+            // Mark off the names that we have solved for
+            let names = this.incomplete_combinations[i].names;
+            for (let j = 0; j < names.length; j++) {
+                for (let k = 0; k < solved_names.length; k++) {
+                    if (names[j] == solved_names[k].name) {
+                        names[j] = solved_names[k].value;
+                    }
+                }
+            }
+
         }
     }
 }

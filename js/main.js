@@ -1,39 +1,52 @@
 import { Event } from './event.js';
-import { EventList } from './event_list.js';
+import { Profile } from './profile.js';
+import { alert } from './utilities.js'
+
 
 // ----- Main -----
 
 // Events list according to the user.
-let event_list = new EventList();
-let energy_before_sleep = null;
+let my_profile = new Profile();
+
 let morning_energy_level = null;
 let current_energy_level = null;
-let sleep_event = new Event("Sleep", 50, false);
 
-// ----- User Functions -----
+// ----- Saving & Loading -----
 
 // Save events to the user's local storage
 function save_events() {
 
     // Read the UI
-    parse_ui();
+    let todays_events = parse_ui();
 
     // Use the overall gain/loss of the day to estimate the energy gain/loss of blank event values
-    let total_gain = current_energy_level - morning_energy_level;
-    let calculated_events = event_list.get_events_in_need_of_values();
-    if (calculated_events.length > 0) {
-        let average_gain = total_gain / calculated_events.length;
-        for (let num in calculated_events) {
-            let event_name = calculated_events[num].name;
-            event_list.events[event_name].values.pop();
-            event_list.events[event_name].values.push(average_gain);
+    // let total_gain = current_energy_level - morning_energy_level;
+    // let calculated_events = my_profile.get_events_in_need_of_values();
+    // if (calculated_events.length > 0) {
+    //     let average_gain = total_gain / calculated_events.length;
+    //     for (let num in calculated_events) {
+    //         let event_name = calculated_events[num].name;
+    //         my_profile.events[event_name].values.pop();
+    //         my_profile.events[event_name].values.push(average_gain);
+    //     }
+    // }
+
+    // Create a day, then hand it to the profile to think about later
+    let today = new Date();
+
+    if (!my_profile.add_new_day( todays_events, starting_energy, ending_energy, false )) {
+        if ( confirm("You've already logged today's events. Do you want to overwrite them?" )) {
+            my_profile.add_new_day(
+                todays_events, starting_energy, ending_energy, true
+            );
+        }
+        else {
+            return;
         }
     }
 
     // Shove some goodies into local storage.
-    localStorage.setItem("events", event_list.to_json());
-    localStorage.setItem("energy_before_sleep", current_energy_level);
-    localStorage.setItem("sleep_event", sleep_event.to_json());
+    localStorage.setItem("events", my_profile.to_json());
 
     show_energy_results(true);
 
@@ -46,72 +59,28 @@ function save_events() {
 // Automatically applies defaults for missing values and/or first time use.
 export function load_events() {
 
-    event_list = EventList.from_json(localStorage.getItem("events"));
+    my_profile = Profile.from_json(localStorage.getItem("events"));
 
-    if (event_list === null) {
-        // Completely new. Put some defaults in.
-        event_list = new EventList();
-    }
-        
-    energy_before_sleep = localStorage.getItem("energy_before_sleep");
-
-    sleep_event = Event.from_json(localStorage.getItem("sleep_event"));
-    if (sleep_event === null) {
-        sleep_event = new Event("Sleep", 50, false);
+    if (my_profile === null) {
+        // Completely new. Leave the.
+        my_profile = new Profile();
     }
 
     // Summarize the load process
-    console.log("Loaded events:");
-    console.log(event_list);
-    console.log("Energy before sleep: " + energy_before_sleep);
-    console.log("Sleep event: ");
-    console.log(sleep_event);
+    console.log("Loaded profile:");
+    console.log(my_profile);
 
-    console.log("Total number of events: " + event_list.get_event_count());
+    console.log("Total number of events: " + my_profile.get_event_count());
 
     // Update the UI
     set_ui_on_load();
 
     // Confirmation details
-    let event_count = event_list.get_event_count();
+    let event_count = my_profile.get_event_count();
     if (event_count > 0)
-        alert("Loaded " + event_list.get_event_count() + " ativities.", 'success');
+        alert("Loaded " + my_profile.get_event_count() + " ativities.", 'success');
 }
 
-// Append a new row to the events table
-function add_event_row() {
-    let table = document.getElementById("eventsTable");
-    let row = table.insertRow(-1);
-    row.classList.add("d-flex");
-    let name_cell = row.insertCell(0);
-    let value_cell = row.insertCell(1);
-    let remove_cell = row.insertCell(2);
-
-    name_cell.classList.add("col");
-    value_cell.classList.add("col-2");
-    remove_cell.classList.add("col-1");
-
-    name_cell.innerHTML = 
-        "<div class='input-group'>" +
-        "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
-        "   <div class='input-group-append'>" +
-        "       <select class='custom-select input-group-select'>" +
-        "           <option value='1' selected>Once</option>" +
-        "           <option value='2'>Twice</option>" +
-        "           <option value='3'>Thrice</option>" +
-        "           <option value='5'>A lot!</option>" +
-        "       </select>" +
-        "   </div>" +
-        "</div>";
-
-    value_cell.innerHTML = "<input type='number' class='eventValues form-control' placeholder='auto'>";
-    remove_cell.innerHTML = "<button class='removeEventBtn form-control btn-danger' onclick=\"remove_event_row(this);\">-</button>";
-
-    /// TODO: Fix this. Make it work here instead of in the HTML.
-    // Add an event listener to the remove button
-    // let remove_btn = remove_cell.getElementsByClassName("removeEventBtn")[0];
-    // remove_btn.addEventListener("click", remove_event_row (row));
-}
 
 /// TODO: Fix this. Make it work here instead of in the HTML.
 // function remove_event_row(btn) {
@@ -121,13 +90,11 @@ function add_event_row() {
 
 // Download a copy of the user's data
 function create_backup() {
+
+    save_events();
+
     // Package some data, then download it as a file.
-    let backup = {
-        "events": event_list.to_json(),
-        "energy_before_sleep": energy_before_sleep,
-        "sleep_event": sleep_event.to_json()
-    };
-    let backup_json = JSON.stringify(backup);
+    let backup_json = my_profile.to_json();
     let backup_blob = new Blob([backup_json], {type: "application/json"});
     let backup_url = URL.createObjectURL(backup_blob);
     let backup_link = document.createElement("a");
@@ -155,9 +122,7 @@ function restore_backup() {
         reader.onload = function() {
             try {
                 let backup = JSON.parse(reader.result);
-                localStorage.setItem("events", backup.events);
-                localStorage.setItem("energy_before_sleep", backup.energy_before_sleep);
-                localStorage.setItem("sleep_event", backup.sleep_event);
+                localStorage.setItem("events", backup);
                 load_events();
             }
             catch (e) {
@@ -171,6 +136,7 @@ function restore_backup() {
     document.getElementById("saveEventsBtn").disabled=false;
 }
 
+// Delete everything!
 function clear_all_events() {
 
     // Confirm the user wants to YEET ALL OF THEIR DATA INTO THE ABYSS
@@ -179,37 +145,25 @@ function clear_all_events() {
     }
 
     // Clear the current data
-    event_list = new EventList();
-    energy_before_sleep = null;
+    my_profile = new Profile();
+    morning_energy_level = null;
     current_energy_level = null;
-    sleep_event = new Event("Sleep", 50, false);
 
     // Clean up the local storage
-    localStorage.removeItem("events");
-    localStorage.removeItem("energy_before_sleep");
-    localStorage.removeItem("sleep_event");
+    localStorage.clear();
 
-    // Clear the UI
-    document.getElementById("eventsTable").children[1].innerHTML =
-    '<tr class="d-flex">' + 
-    '<td class="col"><input type="text" class="form-control eventNames" list="previousEvents" placeholder="What happened, bro?"></td>' +
-    '<td class="col-2"><input type="number" class="form-control eventValues" placeholder="auto" min="-100" max="100"></td>' +
-    '<td class="col-1"><!-- No removing the first row. --></td>' +
-    '</tr>';
-    document.getElementById("batteryLevelStart").value = "50";
-    document.getElementById("batteryLevelEnd").value = "50";
-    document.getElementById("yesterdaysEnergyMention").innerHTML = "";
-    document.getElementById("previousEvents").innerHTML = "";
-
-    document.getElementById("saveEventsBtn").disabled=false;
+    // Easiest way to clear the UI is to reload the page
+    location.reload();
 }
+
+// ----- Utilities & UI -----
 
 // Time to calculate the user's energy expendature
 function show_energy_results(confident_only = false) {
 
-    let local_event_list = event_list;
+    let local_event_list = my_profile;
     if (confident_only) {
-        let local_event_list = event_list.get_confident_events();
+        let local_event_list = my_profile.get_confident_events();
         if (local_event_list.get_event_count() == 0) {
             document.getElementById("resultAreaFillerText").innerHTML = 
             "We don't have enough data to reliably calculate your energy expendature yet. " +
@@ -327,18 +281,56 @@ function show_energy_results(confident_only = false) {
     document.getElementById("resultAreaBlank").hidden = true;
 }
 
-// ----- Utilities & UI -----
+// Append a new row to the events table
+function add_event_row() {
+    let table = document.getElementById("eventsTable");
+    let row = table.insertRow(-1);
+    row.classList.add("d-flex");
+    let name_cell = row.insertCell(0);
+    let value_cell = row.insertCell(1);
+    let remove_cell = row.insertCell(2);
+
+    name_cell.classList.add("col");
+    value_cell.classList.add("col-2");
+    remove_cell.classList.add("col-1");
+
+    name_cell.innerHTML = 
+        "<div class='input-group'>" +
+        "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
+        "   <div class='input-group-append'>" +
+        "       <select class='custom-select input-group-select eventNumbers'>" +
+        "           <option value='1' selected>Once</option>" +
+        "           <option value='2'>Twice</option>" +
+        "           <option value='3'>Thrice</option>" +
+        "           <option value='5'>A lot!</option>" +
+        "       </select>" +
+        "   </div>" +
+        "</div>";
+
+    value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
+        "placeholder='auto'  min='-100' max='100'>";
+    remove_cell.innerHTML = "<button class='removeEventBtn form-control btn-danger' " + 
+        "onclick=\"remove_event_row(this);\">-</button>";
+
+    /// TODO: Fix this. Make it work here instead of in the HTML.
+    // Add an event listener to the remove button
+    // let remove_btn = remove_cell.getElementsByClassName("removeEventBtn")[0];
+    // remove_btn.addEventListener("click", remove_event_row (row));
+}
 
 // Read all the things from the UI
+// Returns an array of events
 function parse_ui() {
+
+    let todays_events = [];
     
     // Sleep
     morning_energy_level = document.getElementById("batteryLevelStart").value;
-    if (energy_before_sleep = null) {
-        sleep_event.add_value( morning_energy_level );
+    if (my_profile.energy_before_sleep == null) {
+        my_profile.sleep.add_value( morning_energy_level );
     }
     else {
-        sleep_event.add_value( morning_energy_level- energy_before_sleep);
+        my_profile.sleep.add_value( morning_energy_level - my_profile.energy_before_sleep);
     }
     current_energy_level = document.getElementById("batteryLevelEnd").value;
     
@@ -353,34 +345,33 @@ function parse_ui() {
             continue;
         }
 
-        for (let j = 0; j < event_numbers[i]; j++) {
+        for (let j = 0; j < event_numbers[i].value; j++) {
             // If the event value is empty, add it as an auto event and we'll calculate it later
             if (event_values[i].value == "") {
-                /// TODO: Handle auto events multiple layers deep
-                event_list.add_or_update_event(event_names[i].value, "auto");
+                todays_events.push(new Event(event_names[i].value, "auto"));
             }
             else {
-                event_list.add_or_update_event(event_names[i].value, event_values[i].value);
+                todays_events.push(new Event(event_names[i].value, event_values[i].value));
             }
         }
-
-
     }
+
+    return todays_events;
 }
 
 function set_ui_on_load() {
     
     // What was yesterday's energy level?
-    if (energy_before_sleep !== null) {
+    if (my_profile.energy_before_sleep !== null && my_profile.energy_before_sleep !== undefined) {
         document.getElementById("yesterdaysEnergyMention").innerHTML = 
-            "You ended yesterday at " + energy_before_sleep + "%.";
+            "You ended yesterday at " + my_profile.energy_before_sleep + "%.";
     }
     else {
         document.getElementById("yesterdaysEnergyMention").innerHTML = "";
     }
 
     // What events have been added before?
-    let event_names = event_list.get_event_names();
+    let event_names = my_profile.get_event_names();
 
     // Add the events to the UI for ease of access
     let previous_events = document.getElementById("previousEvents");
@@ -412,7 +403,7 @@ function update_ui() {
         // Events
         let event_names = document.getElementsByClassName("eventNames");
         let event_values = document.getElementsByClassName("eventValues");
-        let events = event_list.get_events_by_value();
+        let events = my_profile.get_events_by_value();
         for (let i = 0; i < event_names.length; i++) {
             event_names[i].value = events[i].name;
             event_values[i].value = events[i].estimate_value();
@@ -429,42 +420,7 @@ document.getElementById("createBackupBtn").addEventListener("click", create_back
 document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
 
 // We want to do a quick save whenever the user leaves the page
-window.addEventListener("beforeunload", function (e) {
-    save_events();
-});
+// window.addEventListener("beforeunload", function (e) {
+//     save_events();
+// });
 
-// ----- #justbootstrapthings -----
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
-// Bootstrap's alerts
-const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-const alert = (message, type) => {
-  const wrapper = document.createElement('div')
-  wrapper.innerHTML = [
-    `<div class="alert alert-${type} alert-dismissible fade show js-alert" role="alert">` +
-    `   <div>${message}</div>` +
-    '   <button type="button" class="close alert-close" data-dismiss="alert" aria-label="Close">' +
-    '       <span aria-hidden="true">&times;</span>' +
-    '   </button>' +
-    '</div>'
-  ].join('');
-
-  alertPlaceholder.append(wrapper);
-
-  if (document.querySelector('.alert-close')) {
-    document.querySelectorAll('.alert-close').forEach(function($el) {
-      setTimeout(() => {
-        $el.click();
-      }, 2000);
-    });
-  }
-}
-
-// Bootstrap's range inputs
-document.querySelectorAll('input[type=range]').forEach(e => {
-    e.setAttribute('data-value', e.value);
-    e.addEventListener('input', () => {
-      e.setAttribute('data-value', e.value);
-    });
-  });
