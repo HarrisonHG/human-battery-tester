@@ -34,10 +34,10 @@ function save_events() {
     // Create a day, then hand it to the profile to think about later
     let today = new Date();
 
-    if (!my_profile.add_new_day( todays_events, starting_energy, ending_energy, false )) {
+    if (!my_profile.add_new_day(new Date(), todays_events, morning_energy_level, current_energy_level, false )) {
         if ( confirm("You've already logged today's events. Do you want to overwrite them?" )) {
             my_profile.add_new_day(
-                todays_events, starting_energy, ending_energy, true
+                new Date(), todays_events, morning_energy_level, current_energy_level, true
             );
         }
         else {
@@ -45,13 +45,18 @@ function save_events() {
         }
     }
 
+    // Before we save, let's have a good think.
+    console.log("Saving profile:");
+    console.log(my_profile);
+    my_profile.have_a_good_think();
+    console.log("After thinking:");
+    console.log(my_profile);
+
     // Shove some goodies into local storage.
     localStorage.setItem("events", my_profile.to_json());
 
     show_energy_results(true);
-
     document.getElementById("saveEventsBtn").disabled=true;
-
     alert("Saved!", "success");
 }
 
@@ -70,15 +75,55 @@ export function load_events() {
     console.log("Loaded profile:");
     console.log(my_profile);
 
-    console.log("Total number of events: " + my_profile.get_event_count());
+    console.log("Loaded " + my_profile.get_event_count() + " ativities and " + 
+        my_profile.days.length + " days");
 
     // Update the UI
     set_ui_on_load();
 
     // Confirmation details
-    let event_count = my_profile.get_event_count();
-    if (event_count > 0)
-        alert("Loaded " + my_profile.get_event_count() + " ativities.", 'success');
+    alert("Loaded " + my_profile.get_event_count() + " measured ativities and " + 
+        my_profile.days.length + " unprocessed days", 'success');
+
+
+    // TEST TIME!
+    let test_profile = new Profile();
+    test_profile.add_new_day(new Date(2022, 12, 20), [
+        new Event("Work")
+    ], 80, 50, true);
+    test_profile.add_new_day(new Date(2022, 12, 21), [
+        new Event("Work"),
+        new Event("Exercise")
+    ], 80, 40, true);
+    test_profile.add_new_day(new Date(2022, 12, 22), [
+        new Event("Work"),
+        new Event("Exercise"),
+        new Event("Funstuff")
+    ], 80, 60, true);
+    test_profile.add_new_day(new Date(2022, 12, 23), [
+        new Event("Work"),
+        new Event("Stubbed my toe"),
+        new Event("Got a free puppy!", 50)
+    ], 80, 80, true);
+    test_profile.add_new_day(new Date(2022, 12, 24), [
+        new Event("Work"),
+        new Event("Exercise"),
+        new Event("Funstuff")
+    ], 80, 55, true);
+    test_profile.add_new_day(new Date(2022, 12, 25), [
+        new Event("Random event A"),
+        new Event("Random event B"),
+        new Event("Random event C")
+    ], 80, 0, true);
+
+    console.log("Test profile:");
+    console.log(test_profile);
+
+    test_profile.have_a_good_think();
+
+    console.log("Test profile after thinking:");
+    console.log(test_profile);
+
 }
 
 
