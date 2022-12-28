@@ -82,48 +82,15 @@ export function load_events() {
     set_ui_on_load();
 
     // Confirmation details
-    alert("Loaded " + my_profile.get_event_count() + " measured ativities and " + 
-        my_profile.days.length + " unprocessed days", 'success');
-
-
-    // TEST TIME!
-    let test_profile = new Profile();
-    test_profile.add_new_day(new Date(2022, 12, 20), [
-        new Event("Work")
-    ], 80, 50, true);
-    test_profile.add_new_day(new Date(2022, 12, 21), [
-        new Event("Work"),
-        new Event("Exercise")
-    ], 80, 40, true);
-    test_profile.add_new_day(new Date(2022, 12, 22), [
-        new Event("Work"),
-        new Event("Exercise"),
-        new Event("Funstuff")
-    ], 80, 60, true);
-    test_profile.add_new_day(new Date(2022, 12, 23), [
-        new Event("Work"),
-        new Event("Stubbed my toe"),
-        new Event("Got a free puppy!", 50)
-    ], 80, 80, true);
-    test_profile.add_new_day(new Date(2022, 12, 24), [
-        new Event("Work"),
-        new Event("Exercise"),
-        new Event("Funstuff")
-    ], 80, 55, true);
-    test_profile.add_new_day(new Date(2022, 12, 25), [
-        new Event("Random event A"),
-        new Event("Random event B"),
-        new Event("Random event C")
-    ], 80, 0, true);
-
-    console.log("Test profile:");
-    console.log(test_profile);
-
-    test_profile.have_a_good_think();
-
-    console.log("Test profile after thinking:");
-    console.log(test_profile);
-
+    if (my_profile.get_event_count() == 0 && my_profile.days.length == 0) {
+        alert("Welcome to the Human Battery Tester! To get started, add some activities " + 
+            "and log some events. Keep it up for several days and your energy costs will " +
+            "be automatically calculated for you.", "info");
+    }
+    else {
+        alert("Loaded " + my_profile.get_event_count() + " measured ativities and " + 
+            my_profile.days.length + " unprocessed days", 'success');
+    }
 }
 
 

@@ -216,7 +216,14 @@ export class Profile {
             tmp["date"] = this.days[day].date;
             tmp["events"] = this.days[day].events;
             for (let event in this.days[day].events) {
-                tmp["events"][event] = this.days[day].events[event].to_json();
+                // This day may already have been processed for saving.
+                // So, if it's already a string, we good.
+                if (typeof this.days[day].events[event] === "string") {
+                    tmp["events"][event] = this.days[day].events[event];
+                }
+                else {
+                    tmp["events"][event] = this.days[day].events[event].to_json();
+                }
             }
             tmp["starting_energy"] = this.days[day].starting_energy;
             tmp["ending_energy"] = this.days[day].ending_energy;
@@ -283,6 +290,13 @@ export class Profile {
 
         // Days are what we'll be passing over in the hopes of finding more values
         for (let day in this.days) {
+
+            // This would the first time we find out about a mid-save cock-up.
+            // We'll do a quick check just to see if this event is in fact a json string.
+            if (typeof this.days[day].events === "string") {
+                this.days[day].events = JSON.parse(this.days[day].events);
+            }
+
             this.days[day].events.sort((a, b) => a.name.localeCompare(b.name));
         }
         // If we have days in ascending over of event list size, we'll (likely) save iterations
@@ -290,9 +304,8 @@ export class Profile {
         days.sort((a, b) => a.events.length - b.events.length);
 
         // For each day...
-        for (let day in days) {
-            let day_name = day;
-            day = days[day];
+        for (let day_name = 0; day_name < days.length; day_name++) {
+            const day = days[day_name];
 
             if (day.events.length == 0) {
                 // No events? There's more to life than sleeping.
@@ -301,6 +314,7 @@ export class Profile {
                 // that they just clicked save game by mistake.
                 if (day.starting_energy - day.ending_energy == 0 && day.events.length == 0) { 
                     this.days.splice(day_name, 1);
+                    day_name--;
                 }
 
                 // If there are no events, but there is energy expendature, we'll assume
@@ -309,6 +323,7 @@ export class Profile {
                     day.energy_total = day.starting_energy - day.ending_energy;
                     this.sleep.add_value(day.starting_energy - this.energy_before_sleep);
                     this.energy_before_sleep = day.ending_energy;
+                    day_name--;
                 }
 
                 continue;
@@ -384,8 +399,25 @@ export class Profile {
                 this.have_a_good_think();
             }
 
-            /// TODO: Use combinations of events to find more values            
-            
+            // If we have more than one left, we can still calculate it only if all
+            // of the remaining events are identical (eg. 2x 1.5h of exercise)
+            else if (day.events.length > 1) {
+                let all_identical = true;
+                let event_name = day.events[0].name;
+                for (let event in day.events) {
+                    if (day.events[event].name !== event_name) {
+                        all_identical = false;
+                        break;
+                    }
+                }
+
+                if (all_identical) {
+                    this.add_or_update_event(event_name, day.energy_total / day.events.length);
+                    const x = days.splice(day_name, 1);
+                    this.have_a_good_think();
+                }
+
+            }
         }
 
     }
