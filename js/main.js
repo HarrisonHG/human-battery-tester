@@ -2,12 +2,13 @@ import { Event } from './event.js';
 import { Profile } from './profile.js';
 import { alert } from './utilities.js'
 
-
 // ----- Main -----
 
 // Events list according to the user.
 let my_profile = new Profile();
 
+// ----- UI -----
+const DEFAULT_ENERGY_LEVEL = 50;
 let morning_energy_level = null;
 let current_energy_level = null;
 
@@ -18,18 +19,19 @@ function save_events() {
 
     // Read the UI
     let todays_events = parse_ui();
+        
+    // If the user added 0 events, they may have fat-fingered the save button
+    if (todays_events.length == 0
+        && morning_energy_level == DEFAULT_ENERGY_LEVEL
+        && current_energy_level == DEFAULT_ENERGY_LEVEL) {
+        alert("Please add at least one event, or set your energy levels to save.",
+         "warning");
+        
+        return;
+    }
 
-    // Use the overall gain/loss of the day to estimate the energy gain/loss of blank event values
-    // let total_gain = current_energy_level - morning_energy_level;
-    // let calculated_events = my_profile.get_events_in_need_of_values();
-    // if (calculated_events.length > 0) {
-    //     let average_gain = total_gain / calculated_events.length;
-    //     for (let num in calculated_events) {
-    //         let event_name = calculated_events[num].name;
-    //         my_profile.events[event_name].values.pop();
-    //         my_profile.events[event_name].values.push(average_gain);
-    //     }
-    // }
+    console.log("Saving profile:");
+    console.log(my_profile);
 
     // Create a day, then hand it to the profile to think about later
     let today = new Date();
@@ -45,9 +47,20 @@ function save_events() {
         }
     }
 
+    // Well, at least they did something. So let's count this day.
+    this.energy_before_sleep = {
+        date: today,
+        value: current_energy_level
+    }
+
+    if (my_profile.energy_before_sleep == null) {
+        my_profile.sleep.add_value( morning_energy_level );
+    }
+    else {
+        my_profile.sleep.add_value( morning_energy_level - my_profile.energy_before_sleep.value);
+    }
+
     // Before we save, let's have a good think.
-    console.log("Saving profile:");
-    console.log(my_profile);
     my_profile.have_a_good_think();
     console.log("After thinking:");
     console.log(my_profile);
@@ -92,7 +105,6 @@ export function load_events() {
             my_profile.days.length + " unprocessed days", 'success');
     }
 }
-
 
 /// TODO: Fix this. Make it work here instead of in the HTML.
 // function remove_event_row(btn) {
@@ -335,17 +347,7 @@ function add_event_row() {
 function parse_ui() {
 
     let todays_events = [];
-    
-    // Sleep
-    morning_energy_level = document.getElementById("batteryLevelStart").value;
-    if (my_profile.energy_before_sleep == null) {
-        my_profile.sleep.add_value( morning_energy_level );
-    }
-    else {
-        my_profile.sleep.add_value( morning_energy_level - my_profile.energy_before_sleep);
-    }
-    current_energy_level = document.getElementById("batteryLevelEnd").value;
-    
+
     // Events
     let event_names = document.getElementsByClassName("eventNames");
     let event_numbers = document.getElementsByClassName("eventNumbers");
@@ -368,15 +370,27 @@ function parse_ui() {
         }
     }
 
+    // Sleep
+    morning_energy_level = document.getElementById("batteryLevelStart").value;
+    current_energy_level = document.getElementById("batteryLevelEnd").value;
+
     return todays_events;
 }
 
 function set_ui_on_load() {
     
+    // Get yesterday's date
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
     // What was yesterday's energy level?
-    if (my_profile.energy_before_sleep !== null && my_profile.energy_before_sleep !== undefined) {
+    if (my_profile.energy_before_sleep !== null 
+        && my_profile.energy_before_sleep !== undefined
+        && my_profile.energy_before_sleep.value !== null
+        && my_profile.energy_before_sleep.date == yesterday
+        ) {
         document.getElementById("yesterdaysEnergyMention").innerHTML = 
-            "You ended yesterday at " + my_profile.energy_before_sleep + "%.";
+            "You ended yesterday at " + my_profile.energy_before_sleep.value + "%.";
     }
     else {
         document.getElementById("yesterdaysEnergyMention").innerHTML = "";
@@ -435,4 +449,3 @@ document.getElementById("restoreBackupBtn").addEventListener("click", restore_ba
 // window.addEventListener("beforeunload", function (e) {
 //     save_events();
 // });
-

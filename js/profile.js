@@ -12,7 +12,6 @@ import { alert } from './utilities.js'
 // How many measurements of an event should we have before we can begin to trust it?
 let EVENT_CONFIDENT_THRESHOLD = 5;
 
-
 export class Profile {
 
     // ----- Constructors -----
@@ -28,7 +27,10 @@ export class Profile {
         this.sleep = new Event("Sleep Quality");
 
         // The last "current energy level" measurement, used to indicate last night's sleep quality
-        this.energy_before_sleep = null;
+        this.energy_before_sleep = {
+            date: null,
+            value: null
+        }
 
         // Keep a record of recent days to calculate averages
         this.days = [];
@@ -82,7 +84,10 @@ export class Profile {
                     day.events = event_list;
                     day.starting_energy = starting_energy;
                     day.ending_energy = ending_energy;
-                    this.energy_before_sleep = ending_energy;
+                    this.energy_before_sleep = {
+                        date: date,
+                        value: ending_energy
+                    };
                     return true;
                 }
                 else {
@@ -98,6 +103,10 @@ export class Profile {
             events: event_list,
             starting_energy: starting_energy,
             ending_energy: ending_energy
+        };
+        this.energy_before_sleep = {
+            date: date,
+            value: ending_energy
         };
 
         // Add the day to the list
@@ -209,6 +218,7 @@ export class Profile {
         profile["events"] = events;
         profile["sleep"] = this.sleep.to_json();
         profile["name"] = this.my_name;
+        profile["energy_before_sleep"] = this.energy_before_sleep;
 
         let days = [];
         for (let day in this.days) {
@@ -253,6 +263,7 @@ export class Profile {
             }
             loaded_profile.sleep = Event.from_json(profile_str.sleep);
             loaded_profile.my_name = profile_str.name;
+            loaded_profile.energy_before_sleep = profile_str.energy_before_sleep
 
             for (let day in profile_str.days) {
                 let tmp = {};
@@ -311,20 +322,30 @@ export class Profile {
                 // No events? There's more to life than sleeping.
                 
                 // If there are no events and no energy expendature, I'm going to bet
-                // that they just clicked save game by mistake.
-                if (day.starting_energy - day.ending_energy == 0 && day.events.length == 0) { 
-                    this.days.splice(day_name, 1);
-                    day_name--;
-                }
+                // that they just clicked save by mistake.
+                if (day.ending_energy - day.starting_energy != 0) { 
 
-                // If there are no events, but there is energy expendature, we'll assume
-                // that we're just tracking sleep today.
-                else if (day.events.length == 0) {
-                    day.energy_total = day.starting_energy - day.ending_energy;
-                    this.sleep.add_value(day.starting_energy - this.energy_before_sleep);
+                    // If there are no events, but there is energy expendature, we'll assume
+                    // that we're just tracking sleep today.
+                    
+                    // At the moment, we aren't calculating multiple past blank days.
+                    // There shouldn't be any by this point anyway.
+                
+                    let yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+
+                    if (this.energy_before_sleep !== null && this.energy_before_sleep.date == yesterday) {
+                        this.sleep.add_value(day.starting_energy - this.energy_before_sleep.value);
+                        // ...and reset today.
+                        this.energy_before_sleep.value = day.ending_energy;
+                        this.energy_before_sleep.date = new Date();
+                    }
+
                     this.energy_before_sleep = day.ending_energy;
-                    day_name--;
                 }
+                
+                this.days.splice(day_name, 1);
+                day_name--;
 
                 continue;
             }
