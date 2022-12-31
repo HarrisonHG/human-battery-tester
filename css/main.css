@@ -17,6 +17,14 @@
   --gray-light-color: #f8f9fa;
 }
 
+h1 {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
 input[type="range"]::after {
   content: attr(data-value);
   background-image: attr(data-image);
