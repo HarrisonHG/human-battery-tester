@@ -10,7 +10,7 @@ import { alert } from './utilities.js'
 */
 
 // How many measurements of an event should we have before we can begin to trust it?
-let EVENT_CONFIDENT_THRESHOLD = 5;
+let EVENT_CONFIDENT_THRESHOLD = 1;
 
 export class Profile {
 
@@ -351,6 +351,19 @@ export class Profile {
             }
 
             day.energy_total = day.ending_energy - day.starting_energy;
+
+            // Any events with value provided by the user?
+            // Note: If all of them have been provided, we'll end up doing an all-day 
+            // adjustment so it'll work out.
+            for (let event in day.events) {
+                if (day.events[event].has_value()) {
+                    day.energy_total -= day.events[event].total_value();
+                    this.add_or_update_event(
+                        day.events[event].name, 
+                        day.events[event].estimate_value()
+                        );
+                }
+            }
 
             // If we know all of the values for each event in the day, we'll be doing an all-day 
             //  adjustment

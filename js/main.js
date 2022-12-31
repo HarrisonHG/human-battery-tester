@@ -36,7 +36,9 @@ function save_events() {
     // Create a day, then hand it to the profile to think about later
     let today = new Date();
 
-    if (!my_profile.add_new_day(new Date(), todays_events, morning_energy_level, current_energy_level, false )) {
+    if (!my_profile.add_new_day(
+        new Date(), todays_events, morning_energy_level, current_energy_level, false )
+        ) {
         if ( confirm("You've already logged today's events. Do you want to overwrite them?" )) {
             my_profile.add_new_day(
                 new Date(), todays_events, morning_energy_level, current_energy_level, true
@@ -48,7 +50,7 @@ function save_events() {
     }
 
     // Well, at least they did something. So let's count this day.
-    this.energy_before_sleep = {
+    my_profile.energy_before_sleep = {
         date: today,
         value: current_energy_level
     }
@@ -145,8 +147,8 @@ function restore_backup() {
         let reader = new FileReader();
         reader.onload = function() {
             try {
-                let backup = JSON.parse(reader.result);
-                localStorage.setItem("events", backup);
+                //let backup = JSON.parse(reader.result);
+                localStorage.setItem("events", reader.result);
                 load_events();
             }
             catch (e) {
@@ -223,13 +225,14 @@ function show_energy_results(confident_only = false) {
             break;
         }
     }
+    bottom_three.reverse();
 
     // Get the top 3 impactful events
     let top_three_impact = local_event_list.get_events_by_impact();
     top_three_impact = top_three_impact.slice(0, 3);
 
     // What's the average sleep value?
-    let average_sleep = sleep_event.estimate_value();
+    let average_sleep = my_profile.sleep.estimate_value();
 
     // We have our data. Let's make some tables!
 
@@ -256,7 +259,7 @@ function show_energy_results(confident_only = false) {
     bottom_three_table.children[1].innerHTML = "";
     if (bottom_three.length === 0) {
         bottom_three_table.innerHTML = 
-            "<tr><td colspan='2'>You have no draining events? Sick! How do you manage it, man?" + 
+            "<tr><td colspan='2'>You have no draining events? Sick! How do you manage it, man? " + 
             "Can you do a Ted talk or something, because there are plenty strugglig out there, bro." +
             "</td></tr>";
     }
@@ -303,6 +306,11 @@ function show_energy_results(confident_only = false) {
 
     document.getElementById("resultArea").hidden = false;
     document.getElementById("resultAreaBlank").hidden = true;
+
+    // Scroll to the results and hide the "How am I doing?" button
+    document.getElementById("resultArea").scrollIntoView();
+    document.getElementById("calculateBtn").hidden = true;
+
 }
 
 // Append a new row to the events table
@@ -441,7 +449,7 @@ function update_ui() {
 document.getElementById("saveEventsBtn").addEventListener("click", save_events);
 document.getElementById("addEventBtn").addEventListener("click", add_event_row);
 document.getElementById("clearEventsBtn").addEventListener("click", clear_all_events);
-//document.getElementById("calculateBtn").addEventListener("click", calculate_energy, true);
+document.getElementById("calculateBtn").addEventListener("click", show_energy_results, true);
 document.getElementById("createBackupBtn").addEventListener("click", create_backup);
 document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
 

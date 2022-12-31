@@ -70,7 +70,25 @@ export class Event {
         return this.estimate_value();
     }
 
+    value() {
+        return this.estimate_value();
+    }
+
     // ----- Event Functions -----
+
+    // Does this event have any calculated or provided values?
+    has_value() {
+
+        if (this.values.length == 0)
+            return false;
+
+        for (let key in this.values) {
+            if (this.values[key] != "auto")
+                return true;
+        }
+
+        return false;
+    }
 
     // Get the average value of the event
     estimate_value() {
@@ -80,9 +98,9 @@ export class Event {
             return this.fixed_value;
         }
 
-        // If there are no values, return 0
-        if (this.values.length === 0) {
-            return 0;
+        // If there are no values, or it's only auto, return null
+        if (this.values.length === 0 || this.values.length === 1 && this.values[0] === "auto") {
+            return null;
         }
 
         // If it's not fixed, get the average of all values
@@ -91,6 +109,27 @@ export class Event {
             total += parseFloat(this.values[key]);
         }
         return total / Object.keys(this.values).length;
+    }
+
+    // Get the total of the values of the event
+    total_value() {
+            
+            // Fixed value takes priority
+            if (this.fixed_value !== null) {
+                return this.fixed_value;
+            }
+    
+            // If there are no values, or it's only auto, return null
+            if (this.values.length === 0 || this.values.length === 1 && this.values[0] === "auto") {
+                return null;
+            }
+    
+            // If it's not fixed, get the sum of all values
+            let total = 0;
+            for (let key in this.values) {
+                total += parseFloat(this.values[key]);
+            }
+            return total;
     }
 
     // Get the total impact of the event
