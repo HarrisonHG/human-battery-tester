@@ -38,7 +38,7 @@
             <!-- <div class="col-1">
                 <p>Empty</p>
             </div> -->
-            <div class="col-sm-5 col-6">
+            <div class="col-sm-5">
                 <div class="row justify-content-center">
                     <img src="/img/battery_0_side.png" class="range-image" alt="Empty battery" 
                         id="batteryIconStart">
@@ -48,11 +48,14 @@
                         id="batteryLevelStart">
                 </div>
             </div>
-            <div class="col-sm-2 col-0 join-box">
+            <div class="col-sm-2 col-0 join-box d-none d-sm-flex">
                 <img src="/img/resistor_symbol.png" class="join-image" alt="Resistor" 
                     id="resistorImage">
             </div>
-            <div class="col-sm-5 col-6">                
+            <div class="d-block d-sm-none">
+                <!-- TODO: Put some nice transition between battery A and B here. -->
+            </div>
+            <div class="col-sm-5">                
                 <div class="row justify-content-center">
                     <img src="/img/battery_0_side.png" class="range-image" alt="Empty battery"
                         id="batteryIconEnd">
