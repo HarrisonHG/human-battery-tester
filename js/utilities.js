@@ -89,3 +89,9 @@ export function get_battery_gauge_picture(battery_level, rotation = 0) {
 export function clamp(number, min, max) {
   return Math.max(min, Math.min(number, max));
 }
+
+// Set the battery gauges on page load
+document.getElementById("batteryIconStart").src = 
+  get_battery_gauge_picture(document.getElementById("batteryLevelStart").value, 1);
+document.getElementById("batteryIconEnd").src = 
+  get_battery_gauge_picture(document.getElementById("batteryLevelEnd").value, 1);

@@ -155,7 +155,6 @@ export class Event {
         
     }
 
-
     // ----- Utility Functions -----
 
     // Prepare the event for saving
