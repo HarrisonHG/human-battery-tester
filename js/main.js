@@ -1,6 +1,6 @@
 import { Event } from './event.js';
 import { Profile } from './profile.js';
-import { alert } from './utilities.js'
+import { alert, get_battery_gauge_picture } from './utilities.js'
 
 // ----- Main -----
 

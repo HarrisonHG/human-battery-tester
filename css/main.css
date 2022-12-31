@@ -1,8 +1,38 @@
+/* Path: css\main.css */
+
+/* Main theme colours */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --white-color: #fff;
+  --black-color: #000;
+  --gray-color: #6c757d;
+  --gray-dark-color: #343a40;
+  --gray-light-color: #f8f9fa;
+
+}
+
 input[type="range"]::after {
     content: attr(data-value);
+    background-image: attr(data-image);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
     margin-right: -50px;
     padding-left: 10px;
   }
+
+img.range-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .eventNumber {
   width: 3em !important;

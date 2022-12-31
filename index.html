@@ -31,16 +31,35 @@
         <div class="row">
             <div class="col">
                 <p id="yesterdaysEnergyMention"></p>
-                <p>On a scale of 0-100, How full was your battery when woke up?</p>
+                <p>How full did your battery feel at the start and end of the day?</p>
             </div>
         </div>
-        <div class="row">
+        <div class="row justify-content-center">
             <!-- <div class="col-1">
                 <p>Empty</p>
             </div> -->
-            <div class="col">
-                <input type="range" class="form-range" min="0" max="100" step="1"
-                    id="batteryLevelStart">
+            <div class="col-sm-5 col-6">
+                <div class="row justify-content-center">
+                    <img src="/img/battery_0_side.png" class="range-image" alt="Empty battery" 
+                        id="batteryIconStart">
+                </div>
+                <div class="row justify-content-center">
+                    <input type="range" class="form-range" min="0" max="100" step="1"
+                        id="batteryLevelStart">
+                </div>
+            </div>
+            <div class="col-sm-2 col-0">
+                ->
+            </div>
+            <div class="col-sm-5 col-6">                
+                <div class="row justify-content-center">
+                    <img src="/img/battery_0_side.png" class="range-image" alt="Empty battery"
+                        id="batteryIconEnd">
+                </div>
+                <div class="row justify-content-center">
+                    <input type="range" class="form-range" min="0" max="100" step="1"
+                        id="batteryLevelEnd">
+                </div>
             </div>
             <!-- <div class="col-1">
                 <p>100%</p>
@@ -103,7 +122,6 @@
                 <p>Empty</p>
             </div> -->
             <div class="col">
-                <input type="range" class="form-range" min="0" max="100" step="1" id="batteryLevelEnd">
             </div>            
             <!-- <div class="col-1">
                 <p>100%</p>
