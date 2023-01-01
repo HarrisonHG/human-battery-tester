@@ -91,7 +91,7 @@
                                     <input type="text" class="form-control eventNames" 
                                         list="previousEvents" placeholder="What happened, bro?">   
                                         <div class="input-group-append">
-                                        <select class="form-select input-group-select eventNumber" type="button">
+                                        <select class="form-select input-group-select eventNumbers" type="button">
                                             <option value="1" selected>Once</option>
                                             <option value="2">Twice</option>
                                             <option value="3">Thrice</option>
@@ -149,6 +149,19 @@
             </div>
         </div>
 
+        <div class="row justify-content-center sleepQualityDiv" id="sleepQualityDiv" hidden>
+            <div class="col" class="sleepIconLeftDiv" style="text-align:end;">
+                <img class="sleepIcon">
+            </div>
+            <div class="col-auto">
+                <p class="sleepQualityDiv" id="sleepQuality"></p>
+            </div>
+            <div class="col" class="sleepIconRightDiv" style="text-align:start;">
+                <img class="sleepIcon">
+            </div>
+        </div>
+        
+
         <div id="resultAreaBlank" hidden>
             <hr/>
             <p><i><span id="resultAreaFillerText">Once we have some confidence in the event scores, 
@@ -156,11 +169,6 @@
         </div>
         <div id="resultArea" hidden>
             <hr/>
-            <div class="row">
-                <div class="col">
-                    <p>Daily recharge Rate: <span id="sleepQuality"></span></p>
-                </div>
-            </div>
             <div class="row">
                 <div class="col">
                     <p>What are the best rechargers?</p>

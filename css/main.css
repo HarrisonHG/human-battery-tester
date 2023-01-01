@@ -76,9 +76,6 @@ img.join-image {
   align-items: center;
 }
 
-.eventNumber {
-}
-
 .input-group-select {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -86,4 +83,25 @@ img.join-image {
 
 button.wipe-memory {
   text-align:end;
+}
+
+.sleepQualityDiv {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.sleepIconLeftDiv {
+  text-align: right;
+}
+
+.sleepIconRightDiv {
+  text-align: left;
+}
+
+img.sleepIcon {
+  width: auto;
+  max-height:3em;
 }

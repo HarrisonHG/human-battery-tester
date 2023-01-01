@@ -291,7 +291,35 @@ function show_energy_results(confident_only = false) {
     }
 
     // Show the sleep quality
-    document.getElementById("sleepQuality").innerHTML = average_sleep;
+    if (average_sleep != 0) {
+        document.getElementById("sleepQualityDiv").hidden = false;
+
+        if (average_sleep < 0) {
+            // Sleep quality so bad that it's actually a negative value.
+            document.getElementById("sleepQuality").innerHTML = 
+            "Daily Draining Rate: <b>" + average_sleep + "</b>";
+            
+            // Set each sleepIcons to the draining icon
+            let sleepIcons = document.getElementsByClassName("sleepIcon");
+            for (let i = 0; i < sleepIcons.length; i++) {
+                sleepIcons[i].src = "img/battery_draining.png";
+            }
+            
+        } else if (average_sleep > 0) {
+            // Sleep quality in the positives, where it should be.
+            document.getElementById("sleepQuality").innerHTML = "Daily Recharge Rate: "
+            + average_sleep;
+
+            // Set each sleepIcons to the charging icon
+            let sleepIcons = document.getElementsByClassName("sleepIcon");
+            for (let i = 0; i < sleepIcons.length; i++) {
+                sleepIcons[i].src = "img/battery_charging.png";
+            }
+        }
+
+    } else {
+        document.getElementById("sleepQualityDiv").hidden = true;
+    }
 
     // Finally, display a table of events and energy levels
     let result_events_table = document.getElementById("generalResultTable").getElementsByTagName('tbody')[0];
