@@ -237,8 +237,8 @@ function show_energy_results(confident_only = false) {
     // We have our data. Let's make some tables!
 
     // Top 3 positive events
-    let top_three_table = document.getElementById("rechargeTable");
-    top_three_table.children[1].innerHTML = "";
+    let top_three_table = document.getElementById("rechargeTable").getElementsByTagName('tbody')[0];
+    top_three_table.innerHTML = "";
     if (top_three.length === 0) {
         top_three_table.innerHTML = 
             "<tr><td colspan='2'>You're not a single-use battery bro. You're worth " + 
@@ -255,8 +255,8 @@ function show_energy_results(confident_only = false) {
     }
 
     // Top 3 negative events
-    let bottom_three_table = document.getElementById("costTable");
-    bottom_three_table.children[1].innerHTML = "";
+    let bottom_three_table = document.getElementById("costTable").getElementsByTagName('tbody')[0];
+    bottom_three_table.innerHTML = "";
     if (bottom_three.length === 0) {
         bottom_three_table.innerHTML = 
             "<tr><td colspan='2'>You have no draining events? Sick! How do you manage it, man? " + 
@@ -274,8 +274,8 @@ function show_energy_results(confident_only = false) {
     }
 
     // Top 3 impactful events
-    let top_three_impact_table = document.getElementById("impactTable");
-    top_three_impact_table.children[1].innerHTML = "";
+    let top_three_impact_table = document.getElementById("impactTable").getElementsByTagName('tbody')[0];
+    top_three_impact_table.innerHTML = "";
     if (top_three_impact.length === 0) {
         top_three_impact_table.innerHTML = 
             "<tr><td colspan='2'>Nothing happened. At all. Ever.</td></tr>";
@@ -294,8 +294,8 @@ function show_energy_results(confident_only = false) {
     document.getElementById("sleepQuality").innerHTML = average_sleep;
 
     // Finally, display a table of events and energy levels
-    let result_events_table = document.getElementById("generalResultTable");
-    result_events_table.children[1].innerHTML = "";
+    let result_events_table = document.getElementById("generalResultTable").getElementsByTagName('tbody')[0];
+    result_events_table.innerHTML = "";
     ordered_events.forEach(function(event) {
         let row = result_events_table.insertRow(-1);
         let name_cell = row.insertCell(0);
@@ -330,7 +330,7 @@ function add_event_row() {
         "<div class='input-group'>" +
         "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
         "   <div class='input-group-append'>" +
-        "       <select class='custom-select input-group-select eventNumbers'>" +
+        "       <select class='form-select input-group-select eventNumbers' type='button'>" +
         "           <option value='1' selected>Once</option>" +
         "           <option value='2'>Twice</option>" +
         "           <option value='3'>Thrice</option>" +
@@ -341,7 +341,7 @@ function add_event_row() {
 
     value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
         "placeholder='auto'  min='-100' max='100'>";
-    remove_cell.innerHTML = "<button class='removeEventBtn form-control btn-danger' " + 
+    remove_cell.innerHTML = "<button class='removeEventBtn btn-danger form-control' " + 
         "onclick=\"remove_event_row(this);\">-</button>";
 
     /// TODO: Fix this. Make it work here instead of in the HTML.

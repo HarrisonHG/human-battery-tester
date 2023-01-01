@@ -23,7 +23,9 @@ h1 {
 
 h2 {
   text-align: center;
+  margin-top: 1em;
 }
+
 
 input[type="range"]::after {
   content: attr(data-value);
@@ -64,11 +66,24 @@ img.join-image {
   object-fit: cover;
 }
 
+.removeEventBtn {
+  background: var(--danger-color);
+  color: var(--white-color);
+}
+
+.eventNames {
+  display: flex;
+  align-items: center;
+}
+
 .eventNumber {
-  width: 3em !important;
 }
 
 .input-group-select {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+button.wipe-memory {
+  text-align:end;
 }

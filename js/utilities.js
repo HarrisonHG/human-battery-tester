@@ -9,16 +9,15 @@ const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 export const alert = (message, type) => {
   const wrapper = document.createElement('div');
 
-  let button_classes = "close alert-close";
+  let button_classes = "close btn-close alert-close";
   if (type == "success") {
     button_classes += " auto-close";
   }
 
   wrapper.innerHTML = [
-    `<div class="alert alert-${type} alert-dismissible fade show js-alert" role="alert">` +
-    `   <div>${message}</div>` +
-    '   <button type="button" class="' + button_classes + '" data-dismiss="alert" aria-label="Close">' +
-    '       <span aria-hidden="true">&times;</span>' +
+    `<div class="alert alert-${type} alert-dismissible fade show" role="alert">` +
+    `   ${message}` +
+    '   <button type="button" class="' + button_classes + '" data-bs-dismiss="alert" aria-label="Close">' +
     '   </button>' +
     '</div>'
   ].join('');
