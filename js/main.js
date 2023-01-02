@@ -241,8 +241,7 @@ function show_energy_results(confident_only = false) {
     top_three_table.innerHTML = "";
     if (top_three.length === 0) {
         top_three_table.innerHTML = 
-            "<tr><td colspan='2'>You're not a single-use battery bro. You're worth " + 
-            "more than that. Buy yourself an ice-cream and relax!</td></tr>";
+            "<tr><td colspan='2'>Not enough data</td></tr>";
     }
     else {
         for (let i = 0; i < top_three.length; i++) {
@@ -259,9 +258,7 @@ function show_energy_results(confident_only = false) {
     bottom_three_table.innerHTML = "";
     if (bottom_three.length === 0) {
         bottom_three_table.innerHTML = 
-            "<tr><td colspan='2'>You have no draining events? Sick! How do you manage it, man? " + 
-            "Can you do a Ted talk or something, because there are plenty strugglig out there, bro." +
-            "</td></tr>";
+            "<tr><td colspan='2'>Not enough data</td></tr>";
     }
     else {
         for (let i = 0; i < bottom_three.length; i++) {
@@ -273,31 +270,33 @@ function show_energy_results(confident_only = false) {
         }        
     }
 
-    // Top 3 impactful events
-    let top_three_impact_table = document.getElementById("impactTable").getElementsByTagName('tbody')[0];
-    top_three_impact_table.innerHTML = "";
-    if (top_three_impact.length === 0) {
-        top_three_impact_table.innerHTML = 
-            "<tr><td colspan='2'>Nothing happened. At all. Ever.</td></tr>";
-    }
-    else {
-        for (let i = 0; i < top_three_impact.length; i++) {
-            let row = top_three_impact_table.insertRow(-1);
-            let name_cell = row.insertCell(0);
-            let value_cell = row.insertCell(1);
-            name_cell.innerHTML = top_three_impact[i].name;
-            value_cell.innerHTML = Math.round(top_three_impact[i].impact_value()) + "%";
-        }
-    }
+
+    // Unfortunately, this "impact" section might be totally pointless.
+    // // Top 3 impactful events
+    // let top_three_impact_table = document.getElementById("impactTable").getElementsByTagName('tbody')[0];
+    // top_three_impact_table.innerHTML = "";
+    // if (top_three_impact.length === 0) {
+    //     top_three_impact_table.innerHTML = 
+    //         "<tr><td colspan='2'>Nothing happened. At all. Ever.</td></tr>";
+    // }
+    // else {
+    //     for (let i = 0; i < top_three_impact.length; i++) {
+    //         let row = top_three_impact_table.insertRow(-1);
+    //         let name_cell = row.insertCell(0);
+    //         let value_cell = row.insertCell(1);
+    //         name_cell.innerHTML = top_three_impact[i].name;
+    //         value_cell.innerHTML = Math.round(top_three_impact[i].impact_value()) + "%";
+    //     }
+    // }
 
     // Show the sleep quality
     if (average_sleep != 0) {
         document.getElementById("sleepQualityDiv").hidden = false;
+        document.getElementById("rechargeRate").innerHTML = average_sleep + "%";
 
         if (average_sleep < 0) {
             // Sleep quality so bad that it's actually a negative value.
-            document.getElementById("sleepQuality").innerHTML = 
-            "Daily Draining Rate: <b>" + average_sleep + "</b>";
+            document.getElementById("sleepQuality").innerHTML = "Daily Draining Rate";
             
             // Set each sleepIcons to the draining icon
             let sleepIcons = document.getElementsByClassName("sleepIcon");
@@ -307,8 +306,7 @@ function show_energy_results(confident_only = false) {
             
         } else if (average_sleep > 0) {
             // Sleep quality in the positives, where it should be.
-            document.getElementById("sleepQuality").innerHTML = "Daily Recharge Rate: "
-            + average_sleep;
+            document.getElementById("sleepQuality").innerHTML = "Daily Recharge Rate:";
 
             // Set each sleepIcons to the charging icon
             let sleepIcons = document.getElementsByClassName("sleepIcon");

@@ -158,8 +158,8 @@
             <!-- Save and calculate for a returning user -->
             <div class="col d-none justify-content-center" id="SaveEventsDivAdvanced">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-primary" id="saveEventsBtnAdvanced">
-                        Save Day &amp; Calculate
+                    <button type="button" class="btn btn-large btn-primary" id="saveEventsBtnAdvanced">
+                        Save Day
                     </button>
                     <button type="button" 
                         class="btn btn-primary dropdown-toggle dropdown-toggle-split"
@@ -179,7 +179,8 @@
                 <img class="sleepIcon">
             </div>
             <div class="col-auto">
-                <p class="sleepQualityDiv" id="sleepQuality"></p>
+                <p id="sleepQuality"></p>
+                <span id="rechargeRate"></span>
             </div>
             <div class="col" class="sleepIconRightDiv" style="text-align:start;">
                 <img class="sleepIcon">
@@ -196,12 +197,12 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <p>What are the best rechargers?</p>
+                    <h2>Top Rechargers</h2>
                     <table class="table table-hover table-striped" id="rechargeTable">
                         <thead>
-                            <tr class="d-flex">
-                                <th class="col">Event Name</th>
-                                <th class="col-2">Recharge Rate</th>
+                            <tr class="d-flex justify-content-between">
+                                <th class="col-auto">Event Name</th>
+                                <th class="col-auto">Recharge Rate</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -209,19 +210,19 @@
                     </table>
                 </div>
                 <div class="col">
-                    <p>What are the worst drains on your energy?</p>
+                    <h2>Energy Sinks</h2>
                     <table class="table table-hover table-striped" id="costTable">
                         <thead>
-                            <tr class="d-flex">
-                                <th class="col">Event Name</th>
-                                <th class="col-2">Drain</th>
+                            <tr class="d-flex justify-content-between">
+                                <th class="col-auto">Event Name</th>
+                                <th class=" col-auto">Drain</th>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
                 </div>
-                <div class="col">
+                <!-- <div class="col">
                     <p>What are the most impactful events on your life? <i>(For better or worse)</i></p>
                     <table class="table table-hover table-striped" id="impactTable">
                         <thead>
@@ -233,14 +234,14 @@
                         <tbody>
                         </tbody>
                     </table>
-                </div>
+                </div> -->
             </div>
             <div class="row">
                 <hr>
             </div>
             <div class="row">
                 <div class="col">
-                    <p>All events</p>
+                    <h2>All events</h2>
                     <table class="table table-hover table-striped" id="generalResultTable">
                         <thead>
                             <tr class="d-flex">
