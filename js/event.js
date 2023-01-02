@@ -155,6 +155,32 @@ export class Event {
         
     }
 
+    // Get the range of values in this event
+    range_str() {
+        if (this.values.length === 0) {
+            return null;
+        }
+
+        let min = this.values[0];
+        let max = this.values[0];
+
+        for (let key in this.values) {
+            if (this.values[key] < min) {
+                min = this.values[key];
+            }
+            if (this.values[key] > max) {
+                max = this.values[key];
+            }
+        }
+
+        if (min === max) {
+            return "~" + min;
+        }
+        else {
+            return "[" + min + " ~ " + max + "]";
+        }
+    }
+
     // ----- Utility Functions -----
 
     // Prepare the event for saving

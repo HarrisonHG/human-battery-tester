@@ -8,7 +8,7 @@ import { alert, get_battery_gauge_picture } from './utilities.js'
 let my_profile = new Profile();
 
 // ----- UI -----
-const DEFAULT_ENERGY_LEVEL = 50;
+let DEFAULT_ENERGY_LEVEL = 50;
 let morning_energy_level = null;
 let current_energy_level = null;
 
@@ -17,6 +17,15 @@ let current_energy_level = null;
 // Save events to the user's local storage
 function save_events() {
 
+    // If it's today, let's just make sure the user wants to add another day.
+    if (my_profile.energy_before_sleep != null && my_profile.energy_before_sleep.date != null) {
+        if (my_profile.energy_before_sleep.date.getTime() == new Date().getTime()) {
+            if (!confirm("You've already logged today's events. Do you want to add another day?")) {
+                return;
+            }
+        }
+    }
+    
     // Read the UI
     let todays_events = parse_ui();
         
@@ -35,6 +44,7 @@ function save_events() {
 
     // Create a day, then hand it to the profile to think about later
     let today = new Date();
+    today.setHours(0,0,0,0);
 
     if (!my_profile.add_new_day(
         new Date(), todays_events, morning_energy_level, current_energy_level, false )
@@ -72,6 +82,7 @@ function save_events() {
 
     show_energy_results(true);
     document.getElementById("saveEventsBtn").disabled=true;
+    document.getElementById("saveEventsBtnAdvanced").disabled=true;
     alert("Saved!", "success");
 }
 
@@ -89,7 +100,6 @@ export function load_events() {
     // Summarize the load process
     console.log("Loaded profile:");
     console.log(my_profile);
-
     console.log("Loaded " + my_profile.get_event_count() + " ativities and " + 
         my_profile.days.length + " days");
 
@@ -103,8 +113,13 @@ export function load_events() {
             "be automatically calculated for you.", "info");
     }
     else {
+        if (typeof(my_profile.energy_before_sleep.date) == "string") {
+            my_profile.energy_before_sleep.date = new Date(my_profile.energy_before_sleep.date);
+        }
+        
+        let nice_date = my_profile.energy_before_sleep.date.toLocaleDateString();
         alert("Loaded " + my_profile.get_event_count() + " measured ativities and " + 
-            my_profile.days.length + " unprocessed days", 'success');
+            my_profile.days.length + " unprocessed days.<br>Last entry: " + nice_date, 'success');
     }
 }
 
@@ -191,11 +206,14 @@ function show_energy_results(confident_only = false) {
     if (confident_only) {
         let local_event_list = my_profile.get_confident_events();
         if (local_event_list.get_event_count() == 0) {
-            document.getElementById("resultAreaFillerText").innerHTML = 
-            "We don't have enough data to reliably calculate your energy expendature yet. " +
-                "Come back each day and we'll keep measuring your activity costs.";
+            document.getElementById("resultAreaBlank").hidden = false;
+            document.getElementById("resultArea").hidden = true;
             return;
         }
+    }
+    else {
+        document.getElementById("resultAreaBlank").hidden = true;
+        document.getElementById("resultArea").hidden = false;
     }
 
     // Get the top 3 positive events
@@ -298,7 +316,8 @@ function show_energy_results(confident_only = false) {
     // Show the sleep quality
     if (average_sleep != 0) {
         document.getElementById("sleepQualityDiv").hidden = false;
-        document.getElementById("rechargeRate").innerHTML = average_sleep + "%";
+        document.getElementById("rechargeRate").innerHTML = 
+            my_profile.sleep.range_str() + "%";
 
         if (average_sleep < 0) {
             // Sleep quality so bad that it's actually a negative value.
@@ -419,18 +438,40 @@ function parse_ui() {
 
 function set_ui_on_load() {
     
-    // Get yesterday's date
-    let yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
     // What was yesterday's energy level?
     if (my_profile.energy_before_sleep !== null 
         && my_profile.energy_before_sleep !== undefined
         && my_profile.energy_before_sleep.value !== null
-        && my_profile.energy_before_sleep.date == yesterday
         ) {
-        document.getElementById("yesterdaysEnergyMention").innerHTML = 
-            "You ended yesterday at " + my_profile.energy_before_sleep.value + "%.";
+
+        let nice_date = my_profile.energy_before_sleep.date.toLocaleDateString();
+        // document.getElementById("yesterdaysEnergyMention").innerHTML = 
+        //     "Last energy level logged was on " + nice_date 
+        //     + " at " + my_profile.energy_before_sleep.value + "%.";
+
+        // Estimate today's energy level based on yesterday's end and our sleep quality
+        let estimated_starting_energy = parseFloat(my_profile.energy_before_sleep.value)
+            + parseFloat(my_profile.sleep.estimate_value());
+        // Starting energy
+        document.getElementById("batteryLevelStart").value = estimated_starting_energy;
+        document.getElementById("batteryIconStart").src = 
+            get_battery_gauge_picture(estimated_starting_energy, 1);
+        document.getElementById("batteryLevelStart").setAttribute(
+            "data-value", parseInt(estimated_starting_energy));
+        // Ending energy (set to the same so that it doesn't look janky, just changing the start)
+        document.getElementById("batteryLevelEnd").value = estimated_starting_energy;
+        document.getElementById("batteryIconEnd").src = 
+            get_battery_gauge_picture(estimated_starting_energy, 1);
+        document.getElementById("batteryLevelEnd").setAttribute(
+            "data-value", parseInt(estimated_starting_energy));
+
+        DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
+            
+        console.log("Last energy level logged was on " + nice_date 
+            + " at " + my_profile.energy_before_sleep.value + "%.");
+            console.log("Average daily recharge: " + my_profile.sleep.estimate_value() + "%" );
+        console.log("Estimated starting energy: " + estimated_starting_energy);
+
     }
     else {
         document.getElementById("yesterdaysEnergyMention").innerHTML = "";
@@ -459,33 +500,8 @@ function set_ui_on_load() {
         save_div.classList.add("d-flex");
         save_div.classList.remove("d-none");
     }
-}
 
-// Update the UI with the current events (deprecated)
-function update_ui() {
-    
-        // Sleep
-        document.getElementById("batteryLevelStart").value = energy_before_sleep;
-        document.getElementById("batteryLevelEnd").value = current_energy_level;
-    
-        if (energy_before_sleep !== null) {
-            document.getElementById("batteryLevelStart").value = energy_before_sleep;
-            document.getElementById("yesterdaysEnergyMention").innerHTML = 
-                "Yesterday's energy level was " + energy_before_sleep + "%.";
-        }
-        else {
-            document.getElementById("yesterdaysEnergyMention").innerHTML = 
-                "Yesterday's energy level is unknown.";
-        }
 
-        // Events
-        let event_names = document.getElementsByClassName("eventNames");
-        let event_values = document.getElementsByClassName("eventValues");
-        let events = my_profile.get_events_by_value();
-        for (let i = 0; i < event_names.length; i++) {
-            event_names[i].value = events[i].name;
-            event_values[i].value = events[i].estimate_value();
-        }
 }
 
 // ----- Event Listeners -----

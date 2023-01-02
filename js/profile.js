@@ -263,7 +263,41 @@ export class Profile {
             }
             loaded_profile.sleep = Event.from_json(profile_str.sleep);
             loaded_profile.my_name = profile_str.name;
+
+            // Validating this little object. Can sometimes get lost in transit.
+            // ...I should probably look for that bug.
             loaded_profile.energy_before_sleep = profile_str.energy_before_sleep
+            try {
+                if (typeof(loaded_profile.energy_before_sleep) === "undefined") {
+                    loaded_profile.energy_before_sleep = {
+                        value: null,
+                        date: null
+                    }
+                } else if(typeof(loaded_profile.energy_before_sleep) === "string") {
+                    let yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    yesterday.setHours(0, 0, 0, 0);
+                    
+                    loaded_profile.energy_before_sleep = {
+                        value: parseFloat(loaded_profile.energy_before_sleep),
+                        date: yesterday
+                    }
+                } else if (typeof(loaded_profile.energy_before_sleep) === "object") {
+                    // Oooo, we might actually have a valid object here!
+                    let yesterday = new Date(loaded_profile.energy_before_sleep.date);
+                    yesterday.setHours(0, 0, 0, 0); // Just in case
+                    loaded_profile.energy_before_sleep = {
+                        value: parseFloat(loaded_profile.energy_before_sleep.value),
+                        date: yesterday
+                    }              
+                }      
+            }
+            catch (e) {
+                console.log(e);
+                alert("Error loading last day's sleep info. Please report this bug while " +
+                    "I put in a blank value for now.", "danger");
+            }
+
 
             for (let day in profile_str.days) {
                 let tmp = {};
@@ -330,15 +364,13 @@ export class Profile {
                     
                     // At the moment, we aren't calculating multiple past blank days.
                     // There shouldn't be any by this point anyway.
-                
-                    let yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
 
-                    if (this.energy_before_sleep !== null && this.energy_before_sleep.date == yesterday) {
+                    if (this.energy_before_sleep !== null && this.energy_before_sleep.date != null) {
                         this.sleep.add_value(day.starting_energy - this.energy_before_sleep.value);
                         // ...and reset today.
                         this.energy_before_sleep.value = day.ending_energy;
                         this.energy_before_sleep.date = new Date();
+                        this.energy_before_sleep.date.setHours(0, 0, 0, 0);
                     }
 
                     this.energy_before_sleep = day.ending_energy;
@@ -354,7 +386,7 @@ export class Profile {
 
             // Any events with value provided by the user?
             // Note: If all of them have been provided, we'll end up doing an all-day 
-            // adjustment so it'll work out.
+            // adjustment anyway.
             for (let event in day.events) {
                 if (day.events[event].has_value()) {
                     day.energy_total -= day.events[event].total_value();
@@ -386,13 +418,22 @@ export class Profile {
                 //  So I'm going back to the classic new-parameter-per-line style.
                 //  Sorry not sorry.
 
-                // Adjust each value in the day by an equal share of the energy total
-                let adjustment = day.energy_total / day.events.length;
+                let expected_total = 0;
                 for (let event in day.events) {
                     let event_name = day.events[event].name;
-                    let old_value = this.events[event_name].values.slice(-1)[0];
+                    expected_total += this.events[event_name].estimate_value();
+                }
+
+                let error_margin = day.energy_total - expected_total;
+                let adjustment = error_margin / day.events.length;
+
+                // Adjust each value in the day by an equal share of the energy total
+                //let adjustment = day.energy_total / day.events.length;
+                for (let event in day.events) {
+                    let event_name = day.events[event].name;
+                    let old_value = this.events[event_name].estimate_value();
                     day.events[event].values = [];
-                    day.events[event].add_value(old_value + adjustment);
+                    day.events[event].add_value(adjustment + old_value);
                 }
 
                 // Add adjusted values to the profile's own event list
