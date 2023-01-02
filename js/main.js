@@ -443,6 +443,18 @@ function set_ui_on_load() {
         option.value = event_names[i];
         previous_events.appendChild(option);
     }
+
+    // Alter the save button depending on whether or not this is a new user
+    if (my_profile.get_event_count() == 0 && my_profile.days.length == 0) {
+        let save_div = document.getElementById("SaveEventsDivSimple");
+        save_div.classList.add("d-flex");
+        save_div.classList.remove("d-none");
+    }
+    else {
+        let save_div = document.getElementById("SaveEventsDivAdvanced");
+        save_div.classList.add("d-flex");
+        save_div.classList.remove("d-none");
+    }
 }
 
 // Update the UI with the current events (deprecated)
@@ -475,6 +487,7 @@ function update_ui() {
 // ----- Event Listeners -----
 //document.getElementById("loadEventsBtn").addEventListener("click", load_events);
 document.getElementById("saveEventsBtn").addEventListener("click", save_events);
+document.getElementById("saveEventsBtnAdvanced").addEventListener("click", save_events);
 document.getElementById("addEventBtn").addEventListener("click", add_event_row);
 document.getElementById("clearEventsBtn").addEventListener("click", clear_all_events);
 document.getElementById("calculateBtn").addEventListener("click", show_energy_results, true);

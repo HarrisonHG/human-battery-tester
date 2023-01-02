@@ -17,6 +17,8 @@
   --gray-light-color: #f8f9fa;
 }
 
+/* Text and general spacing */
+
 h1 {
   text-align: center;
 }
@@ -26,6 +28,21 @@ h2 {
   margin-top: 1em;
 }
 
+hr {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+#eventsTable {
+  margin-bottom:0;
+}
+
+.eventNames {
+  display: flex;
+  align-items: center;
+}
+
+/* Inputs */
 
 input[type="range"]::after {
   content: attr(data-value);
@@ -71,18 +88,10 @@ img.join-image {
   color: var(--white-color);
 }
 
-.eventNames {
-  display: flex;
-  align-items: center;
-}
 
 .input-group-select {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-}
-
-button.wipe-memory {
-  text-align:end;
 }
 
 .sleepQualityDiv {
@@ -101,7 +110,25 @@ button.wipe-memory {
   text-align: left;
 }
 
+#addEventBtn {
+  width: 100%;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* Images and icons */
+
 img.sleepIcon {
   width: auto;
   max-height:3em;
+}
+
+#liveAlertPlaceholder {
+  width:100%;
+}
+
+svg.bi {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
 }
