@@ -176,14 +176,14 @@
 
         <div class="row justify-content-center sleepQualityDiv" id="sleepQualityDiv" hidden>
             <div class="col" class="sleepIconLeftDiv" style="text-align:end;">
-                <img class="sleepIcon">
+                <img class="sleepIcon titleIcon">
             </div>
             <div class="col-auto">
                 <p id="sleepQuality"></p>
                 <span id="rechargeRate"></span>
             </div>
             <div class="col" class="sleepIconRightDiv" style="text-align:start;">
-                <img class="sleepIcon">
+                <img class="sleepIcon titleIcon">
             </div>
         </div>
         
@@ -196,31 +196,59 @@
         <div id="resultArea" hidden>
             <hr/>
             <div class="row">
-                <div class="col">
-                    <h2>Top Rechargers</h2>
-                    <table class="table table-hover table-striped" id="rechargeTable">
-                        <thead>
-                            <tr class="d-flex justify-content-between">
-                                <th class="col-auto">Event Name</th>
-                                <th class="col-auto">Recharge Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <div class="col" id="rechargersDiv">
+                    <div class="row">
+                        <div class="col titleIconLeftDiv">
+                            <img class="titleIcon" src="/img/battery_charging.png">
+                        </div>
+                        <div class="col-auto">
+                            <div class="col">
+                                <h2>Top Rechargers</h2>
+                            </div>
+                        </div>
+                        <div class="col titleIconRightDiv">
+                            <img class="titleIcon" src="/img/battery_charging.png">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-hover table-striped" id="rechargeTable">
+                            <thead>
+                                <tr class="d-flex justify-content-between">
+                                    <th class="col-auto">Event Name</th>
+                                    <th class="col-auto">Recharge Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="col">
-                    <h2>Energy Sinks</h2>
-                    <table class="table table-hover table-striped" id="costTable">
-                        <thead>
-                            <tr class="d-flex justify-content-between">
-                                <th class="col-auto">Event Name</th>
-                                <th class=" col-auto">Drain</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <div class="col" id="energySinksDiv">
+                    <div class="row">
+                        <div class="col titleIconLeftDiv">
+                            <img class="titleIcon" src="/img/battery_draining.png">
+                        </div>
+                        <div class="col-auto">
+                            <div class="col">
+                                <h2>Energy Sinks</h2>
+                            </div>
+                        </div>
+                        <div class="col titleIconRightDiv">
+                            <img class="titleIcon" src="/img/battery_draining.png">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-hover table-striped" id="costTable">
+                            <thead>
+                                <tr class="d-flex justify-content-between">
+                                    <th class="col-auto">Event Name</th>
+                                    <th class=" col-auto">Drain</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <!-- <div class="col">
                     <p>What are the most impactful events on your life? <i>(For better or worse)</i></p>

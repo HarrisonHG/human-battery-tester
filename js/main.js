@@ -242,6 +242,9 @@ function show_energy_results(confident_only = false) {
     if (top_three.length === 0) {
         top_three_table.innerHTML = 
             "<tr><td colspan='2'>Not enough data</td></tr>";
+
+        // Sod it, just hide the whole thing.
+        document.getElementById("rechargersDiv").classList.add("d-none");
     }
     else {
         for (let i = 0; i < top_three.length; i++) {
@@ -259,6 +262,9 @@ function show_energy_results(confident_only = false) {
     if (bottom_three.length === 0) {
         bottom_three_table.innerHTML = 
             "<tr><td colspan='2'>Not enough data</td></tr>";
+
+            // Sod it, just hide the whole thing.
+            document.getElementById("energySinksDiv").classList.add("d-none");
     }
     else {
         for (let i = 0; i < bottom_three.length; i++) {

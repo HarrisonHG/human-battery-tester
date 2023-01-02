@@ -112,13 +112,18 @@ img.join-image {
   margin-bottom: 0;
 }
 
-.sleepIconLeftDiv {
-  text-align: right;
+.titleIconLeftDiv {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
-.sleepIconRightDiv {
-  text-align: left;
+.titleIconRightDiv {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
 }
+
 
 #addEventBtn {
   width: 100%;
@@ -128,7 +133,7 @@ img.join-image {
 
 /* Images and icons */
 
-img.sleepIcon {
+img.titleIcon {
   width: auto;
   max-height:3em;
 }
