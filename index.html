@@ -14,9 +14,6 @@
   
     <!-- Our styling -->
     <link rel="stylesheet" href="/css/main.css">
-    
-    <!-- Where the cool stuff happens -->
-    <script type="module" src="/js/main.js"></script>
 
 </head>
 <body>
@@ -64,10 +61,15 @@
                     <input type="range" class="form-range" min="0" max="100" step="1"
                         id="batteryLevelStart">
                 </div>
+                <div class="row justify-content-center">
+                    <p class="batteryLevelDescriptor" id="batteryLevelStartDescriptor"></p>
+                    <p class="batteryLevelComment" id="batteryLevelStartComment"></p>
+                </div>
+
             </div>
             <div class="col-sm-2 col-0 join-box d-none d-sm-flex">
-                    <img src="/img/resistor_symbol.png" class="join-image" alt="Resistor" 
-                        id="resistorImage">
+                <img src="/img/resistor_symbol.png" class="join-image" alt="Resistor" 
+                    id="resistorImage">
             </div>
             <div class="d-block d-sm-none">
                 <!-- TODO: Put some nice transition between battery A and B here. -->
@@ -82,6 +84,10 @@
                 <div class="row justify-content-center">
                         <input type="range" class="form-range" min="0" max="100" step="1"
                             id="batteryLevelEnd">
+                </div>
+                <div class="row justify-content-center">
+                    <p class="batteryLevelDescriptor" id="batteryLevelEndDescriptor"></p>
+                    <p class="batteryLevelComment" id="batteryLevelEndComment"></p>
                 </div>
             </div>
             <!-- <div class="col-1">

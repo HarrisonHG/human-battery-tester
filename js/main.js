@@ -1,6 +1,6 @@
 import { Event } from './event.js';
 import { Profile } from './profile.js';
-import { alert, get_battery_gauge_picture } from './utilities.js'
+import { alert, get_battery_gauge_picture, get_battery_gauge_descriptor } from './utilities.js'
 
 // ----- Main -----
 
@@ -181,7 +181,7 @@ function restore_backup() {
 function clear_all_events() {
 
     // Confirm the user wants to YEET ALL OF THEIR DATA INTO THE ABYSS
-    if (!confirm("Are you absolutely deifnitely sure that you want to start from scratch?")) {
+    if (!confirm("Are you absolutely, definitely sure that you want to start from scratch?")) {
         return;
     }
 
@@ -326,7 +326,7 @@ function show_energy_results(confident_only = false) {
             // Set each sleepIcons to the draining icon
             let sleepIcons = document.getElementsByClassName("sleepIcon");
             for (let i = 0; i < sleepIcons.length; i++) {
-                sleepIcons[i].src = "img/battery_draining.png";
+                sleepIcons[i].src = "/img/battery_draining.png";
             }
             
         } else if (average_sleep > 0) {
@@ -336,7 +336,7 @@ function show_energy_results(confident_only = false) {
             // Set each sleepIcons to the charging icon
             let sleepIcons = document.getElementsByClassName("sleepIcon");
             for (let i = 0; i < sleepIcons.length; i++) {
-                sleepIcons[i].src = "img/battery_charging.png";
+                sleepIcons[i].src = "/img/battery_charging.png";
             }
         }
 
@@ -452,21 +452,30 @@ function set_ui_on_load() {
         // Estimate today's energy level based on yesterday's end and our sleep quality
         let estimated_starting_energy = parseFloat(my_profile.energy_before_sleep.value)
             + parseFloat(my_profile.sleep.estimate_value());
+        DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
+
         // Starting energy
         document.getElementById("batteryLevelStart").value = estimated_starting_energy;
         document.getElementById("batteryIconStart").src = 
             get_battery_gauge_picture(estimated_starting_energy, 1);
         document.getElementById("batteryLevelStart").setAttribute(
-            "data-value", parseInt(estimated_starting_energy));
+            "data-value", parseInt(estimated_starting_energy) + "%");
+        let words = get_battery_gauge_descriptor(estimated_starting_energy);
+        document.getElementById("batteryLevelStartDescriptor").innerHTML = words.descriptor;
+        document.getElementById("batteryLevelStartComment").innerHTML = words.comment;
+
         // Ending energy (set to the same so that it doesn't look janky, just changing the start)
         document.getElementById("batteryLevelEnd").value = estimated_starting_energy;
         document.getElementById("batteryIconEnd").src = 
             get_battery_gauge_picture(estimated_starting_energy, 1);
         document.getElementById("batteryLevelEnd").setAttribute(
-            "data-value", parseInt(estimated_starting_energy));
+            "data-value", parseInt(estimated_starting_energy) + "%");
+        words = get_battery_gauge_descriptor(estimated_starting_energy);
+        document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
+        document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
 
-        DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
             
+        // debug
         console.log("Last energy level logged was on " + nice_date 
             + " at " + my_profile.energy_before_sleep.value + "%.");
             console.log("Average daily recharge: " + my_profile.sleep.estimate_value() + "%" );

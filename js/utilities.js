@@ -1,8 +1,42 @@
 let BATTERY_IMG_THRESHOLDS = [100, 80, 60, 40, 20, 1, 0];
 
+// Phrases to describe the battery level in human terms. Doesn't have to match the thresholds above.
+let BATTERY_DESCRIPTOR_THRESHOLDS = {
+  "100": "bouncing off the walls",
+  "90": "hyped",
+  "80": "energetic",
+  "70": "eager",
+  "60": "ready",
+  "50": "doing okay",
+  "40": "surviving",
+  "30": "wavering",
+  "20": "breaking",
+  "10": "so tired",
+  "1": "nearing collapse",
+  "0": "an empty husk"
+};
+
+// Please keep these comments at the same threshold as the above
+let BATTERY_COMMENT_THRESHOLDS = {
+  "100": "LET'S FUCKEN GOOOOOOO",
+  "90": "This is a damn good day.",
+  "80": "Sportsball, anyone?",
+  "70": "Give me a challenge",
+  "60": "Let's do the thing.",
+  "50": "What's next?",
+  "40": "I can do this.",
+  "30": "5 minute break?",
+  "20": "Digging into my reserves.",
+  "10": "I really need to rest.",
+  "1": "Can't continue like this...",
+  "0": "Save me from this void."
+};
+
 // ----- #justbootstrapthings -----
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+const tooltipList = [...tooltipTriggerList].map(
+  tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)
+  );
 
 // Bootstrap's alerts
 const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
@@ -54,11 +88,11 @@ export const alert = (message, type) => {
 
 // Bootstrap's range inputs
 document.querySelectorAll('input[type=range]').forEach(e => {
-    e.setAttribute('data-value', e.value);
+    e.setAttribute('data-value', e.value + "%");
     e.addEventListener('input', () => {
 
       // Set the numerical value
-      e.setAttribute('data-value', e.value);
+      e.setAttribute('data-value', e.value + "%");
 
       // // Set the color
       // let color = 'var(--primary-color)';
@@ -74,9 +108,17 @@ document.querySelectorAll('input[type=range]').forEach(e => {
 
 document.getElementById("batteryLevelStart").addEventListener("input", function() {
   document.getElementById("batteryIconStart").src = get_battery_gauge_picture(this.value, 1);
+  
+  let words = get_battery_gauge_descriptor(parseInt(this.value));
+  document.getElementById("batteryLevelStartDescriptor").innerHTML = words.descriptor;
+  document.getElementById("batteryLevelStartComment").innerHTML = words.comment;
 });
 document.getElementById("batteryLevelEnd").addEventListener("input", function() {
   document.getElementById("batteryIconEnd").src = get_battery_gauge_picture(this.value, 1);
+
+  let words = get_battery_gauge_descriptor(parseInt(this.value));
+  document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
+  document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
 });
 
 // Get the next available battery gauge picture, rounding down
@@ -103,13 +145,39 @@ export function get_battery_gauge_picture(battery_level, rotation = 0) {
   return filename + ".png";
 }
 
+export function get_battery_gauge_descriptor(battery_level) {
+  clamp(battery_level, 0, 100);
+
+  // Descriptors may or may not match the picture's thresholds.
+  let highest_level = 0;
+  let descriptor = "";
+  let comment = "";
+
+  for (let level in BATTERY_DESCRIPTOR_THRESHOLDS) { 
+    if (battery_level >= parseInt(level)) {
+      highest_level = level;
+      descriptor = BATTERY_DESCRIPTOR_THRESHOLDS[level];
+      comment = BATTERY_COMMENT_THRESHOLDS[level];
+    }
+    else {
+      break;
+    }
+  }
+
+  return {
+    "level": highest_level,
+    "descriptor": descriptor,
+    "comment": comment
+  };
+}
+
 // Clamp a number between a min and max
 export function clamp(number, min, max) {
   return Math.max(min, Math.min(number, max));
 }
 
 // Set the battery gauges on page load
-document.getElementById("batteryIconStart").src = 
-  get_battery_gauge_picture(document.getElementById("batteryLevelStart").value, 1);
-document.getElementById("batteryIconEnd").src = 
-  get_battery_gauge_picture(document.getElementById("batteryLevelEnd").value, 1);
+// document.getElementById("batteryIconStart").src = 
+//   get_battery_gauge_picture(document.getElementById("batteryLevelStart").value, 1);
+// document.getElementById("batteryIconEnd").src = 
+//   get_battery_gauge_picture(document.getElementById("batteryLevelEnd").value, 1);
