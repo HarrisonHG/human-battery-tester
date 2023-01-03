@@ -93,13 +93,6 @@ div.join-box {
   margin-bottom: 6em;
 }
 
-img.join-image {
-  margin:auto;
-  display: block;
-  width: 120%;
-  object-fit: cover;
-}
-
 .removeEventBtn {
   background: var(--danger-color);
   color: var(--white-color);
@@ -158,4 +151,16 @@ svg.bi {
   width: 1em;
   height: 1em;
   vertical-align: -0.125em;
+}
+
+img.join-image {
+  margin:auto;
+  display: block;
+  width: 120%;
+  object-fit: cover;
+}
+
+#resistorImageRotated {
+  width: 30%;
+  margin-bottom: 1em;
 }
