@@ -7,17 +7,27 @@ import {
 // ----- Main -----
 
 // Events list according to the user.
-let my_profile = new Profile();
+var my_profile = new Profile();
 
 // ----- UI -----
-let DEFAULT_ENERGY_LEVEL = 50;
-let morning_energy_level = null;
-let current_energy_level = null;
+var DEFAULT_ENERGY_LEVEL = 50;
+var morning_energy_level = null;
+var current_energy_level = null;
 
 // ----- Settings -----
-let ask_questions = true;
+var user_options_default = { 
+    ask_questions: true,
+    show_running_total: true
+}
+var user_options = user_options_default;
 
 // ----- Saving & Loading -----
+
+// Save JUST the settings
+// They will be loaded along with the events in load_events()
+function save_settings() {
+    localStorage.setItem("settings", JSON.stringify(user_options));
+}
 
 // Save events to the user's local storage
 function save_events() {
@@ -84,6 +94,7 @@ function save_events() {
 
     // Shove some goodies into local storage.
     localStorage.setItem("events", my_profile.to_json());
+    save_settings();
 
     show_energy_results(true);
     document.getElementById("saveEventsBtn").disabled=true;
@@ -96,6 +107,9 @@ function save_events() {
 export function load_events() {
 
     my_profile = Profile.from_json(localStorage.getItem("events"));
+    my_profile = my_profile == null ? new Profile() : my_profile;
+    user_options = JSON.parse(localStorage.getItem("settings"));    
+    user_options = user_options == null ? user_options_default: user_options ;
 
     if (my_profile === null) {
         // Completely new. Leave the.
@@ -115,7 +129,7 @@ export function load_events() {
     if (my_profile.get_event_count() == 0 && my_profile.days.length == 0) {
         alert("Welcome to the Human Battery Tester! To get started, add some activities " + 
             "and log some events. Keep it up for several days and your energy costs will " +
-            "be automatically calculated for you.", "info");
+            "be automatically calculated for you.", "info");        
     }
     else {
         if (typeof(my_profile.energy_before_sleep.date) == "string") {
@@ -140,7 +154,10 @@ function create_backup() {
     save_events();
 
     // Package some data, then download it as a file.
-    let backup_json = my_profile.to_json();
+    let backup_obj = {};
+    backup_obj.profile = my_profile.to_json();
+    backup_obj.settings = JSON.stringify(user_options);
+    let backup_json = JSON.stringify(backup_obj);
     let backup_blob = new Blob([backup_json], {type: "application/json"});
     let backup_url = URL.createObjectURL(backup_blob);
     let backup_link = document.createElement("a");
@@ -167,8 +184,10 @@ function restore_backup() {
         let reader = new FileReader();
         reader.onload = function() {
             try {
-                //let backup = JSON.parse(reader.result);
-                localStorage.setItem("events", reader.result);
+                let backup = JSON.parse(reader.result);
+
+                localStorage.setItem("events", backup.profile);
+                localStorage.setItem("settings", backup.settings);
                 load_events();
             }
             catch (e) {
@@ -442,6 +461,9 @@ function parse_ui() {
 }
 
 function set_ui_on_load() {
+
+    let estimated_starting_energy = 50;
+    DEFAULT_ENERGY_LEVEL = 50;
     
     // What was yesterday's energy level?
     if (my_profile.energy_before_sleep !== null 
@@ -460,33 +482,6 @@ function set_ui_on_load() {
         estimated_starting_energy = clamp(estimated_starting_energy, 0, 100);
         DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
 
-        // Starting energy
-        document.getElementById("batteryLevelStart").value = estimated_starting_energy;
-        document.getElementById("batteryIconStart").src = 
-            get_battery_gauge_picture(estimated_starting_energy, 1);
-        document.getElementById("batteryLevelStart").setAttribute(
-            "data-value", parseInt(estimated_starting_energy) + "%");
-        let words = get_battery_gauge_descriptor(estimated_starting_energy);
-        document.getElementById("batteryLevelStartDescriptor").innerHTML = words.descriptor;
-        document.getElementById("batteryLevelStartComment").innerHTML = words.comment;
-
-        // Ending energy (set to the same so that it doesn't look janky, just changing the start)
-        document.getElementById("batteryLevelEnd").value = estimated_starting_energy;
-        document.getElementById("batteryIconEnd").src = 
-            get_battery_gauge_picture(estimated_starting_energy, 1);
-        document.getElementById("batteryLevelEnd").setAttribute(
-            "data-value", parseInt(estimated_starting_energy) + "%");
-        words = get_battery_gauge_descriptor(estimated_starting_energy);
-        document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
-        document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
-
-        // There are a few things that change when the battery level changes, so we'll
-        // trigger a change event on the battery level to make sure they get updated
-        let battery_level_start = document.getElementById("batteryLevelStart");
-        battery_level_start.dispatchEvent(new Event("change"));
-        let batter_level_end = document.getElementById("batteryLevelEnd");
-        batter_level_end.dispatchEvent(new Event("change"));
-            
         // debug
         console.log("Last energy level logged was on " + nice_date 
             + " at " + my_profile.energy_before_sleep.value + "%.");
@@ -497,6 +492,37 @@ function set_ui_on_load() {
     else {
         document.getElementById("yesterdaysEnergyMention").innerHTML = "";
     }
+
+    // Starting energy
+    document.getElementById("batteryLevelStart").value = estimated_starting_energy;
+    document.getElementById("batteryIconStart").src = 
+        get_battery_gauge_picture(estimated_starting_energy, 1);
+    document.getElementById("batteryLevelStart").setAttribute(
+        "data-value", parseInt(estimated_starting_energy) + "%");
+    let words = get_battery_gauge_descriptor(estimated_starting_energy);
+    document.getElementById("batteryLevelStartDescriptor").innerHTML = words.descriptor;
+    document.getElementById("batteryLevelStartComment").innerHTML = words.comment;
+
+    // Ending energy (set to the same so that it doesn't look janky, just changing the start)
+    document.getElementById("batteryLevelEnd").value = estimated_starting_energy;
+    document.getElementById("batteryIconEnd").src = 
+        get_battery_gauge_picture(estimated_starting_energy, 1);
+    document.getElementById("batteryLevelEnd").setAttribute(
+        "data-value", parseInt(estimated_starting_energy) + "%");
+    words = get_battery_gauge_descriptor(estimated_starting_energy);
+    document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
+    document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
+
+    // Options
+    document.getElementById("askQuestions").checked = user_options.ask_questions;
+    document.getElementById("showRunningTotal").checked = user_options.show_running_total;
+
+    // There are a few things that change when the battery level changes, so we'll
+    // trigger a change event on the battery level to make sure they get updated
+    let battery_level_start = document.getElementById("batteryLevelStart");
+    battery_level_start.dispatchEvent(new Event("change"));
+    let batter_level_end = document.getElementById("batteryLevelEnd");
+    batter_level_end.dispatchEvent(new Event("change"));
 
     // What events have been added before?
     let event_names = my_profile.get_event_names();
@@ -543,6 +569,8 @@ function enable_advanced_options() {
             advanced_options[i].classList.remove("d-flex");
         }
     }
+
+    save_settings();
 }
 
 // ----- Event Listeners -----
@@ -561,17 +589,33 @@ document.getElementById("restoreBackupBtn").addEventListener("click", restore_ba
 // Raise/Lower the flag for asking questions
 function to_ask_or_not_to_ask() {
     if (document.getElementById("askQuestions").checked) {
-        ask_questions = true;
+        user_options.ask_questions = true;
         console.log("Asking questions");
     }
     else {
-        ask_questions = false;
+        user_options.ask_questions = false;
         console.log("Not asking questions");       
     }
+
+    save_settings();
 }
 document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
 
 
+// Raise/Lower the flag for showing a running total
+function should_we_show_running_total() {
+    if (document.getElementById("showRunningTotal").checked) {
+        user_options.show_running_total = true;
+        console.log("Showing a running total");
+    }
+    else {
+        user_options.show_running_total = false;
+        console.log("Not showing a running total");       
+    }
+
+    save_settings();
+}
+document.getElementById("showRunningTotal").addEventListener("change", should_we_show_running_total);
 
 // We want to do a quick save whenever the user leaves the page
 // window.addEventListener("beforeunload", function (e) {

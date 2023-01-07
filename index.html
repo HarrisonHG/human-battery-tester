@@ -63,7 +63,7 @@
                         id="batteryLevelStart">
                 </div>
                 <div class="row justify-content-center">
-                    <h4 id="batteryLevelStartPercentage">00</h4>
+                    <h4 id="batteryLevelStartPercentage">50</h4>
                     <p class="batteryLevelDescriptor" id="batteryLevelStartDescriptor">descriptor</p>
                     <p class="batteryLevelComment" id="batteryLevelStartComment">comment</p>
                 </div>
@@ -90,7 +90,7 @@
                             id="batteryLevelEnd">
                 </div>
                 <div class="row justify-content-center">
-                    <h4 id="batteryLevelEndPercentage">00</h4>
+                    <h4 id="batteryLevelEndPercentage">50</h4>
                     <p class="batteryLevelDescriptor" id="batteryLevelEndDescriptor">descriptor</p>
                     <p class="batteryLevelComment" id="batteryLevelEndComment">comment</p>
                 </div>
@@ -323,7 +323,6 @@
         </div>
     </div>
 
-    
     <datalist id="previousEvents">
     </datalist>
 
@@ -355,23 +354,27 @@
               <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body row justify-content-around">
-                <div class="col-auto form-check form-switch">
+            <div class="modal-body">
+                <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" checked>
                     <label class="form-check-label" for="askQuestions">Ask questions when too many days are unprocessed</label>
                 </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="showRunningTotal" checked>
+                    <label class="form-check-label" for="showRunningTotal">Show a running end-of-day estimate as you add activities</label>
+                </div>
             </div>
-            <div class="modal-footer row justify-content-between">
-                <div class="col-auto">
-                    <button type="button" class="btn btn-danger wipe-memory" id="clearEventsBtn">
-                        Wipe Memory
-                    </button>
-                </div>
+            <div class="modal-footer justify-content-between">
                     <div class="col-auto">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
+                        <button type="button" class="btn btn-outline-danger wipe-memory" id="clearEventsBtn">
+                            Wipe Memory
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
             </div>
           </div>
         </div>
