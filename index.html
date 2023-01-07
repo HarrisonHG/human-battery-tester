@@ -58,7 +58,8 @@
                             id="batteryIconStart">
                     </label>
                 </div>
-                <div class="row justify-content-center">
+                <div class="row justify-content-center"  data-toggle="tooltip" data-placement="right" 
+                title="Think back to 20-30 minutes after you first woke up.">
                     <input type="range" min="0" max="100" step="1"
                         id="batteryLevelStart">
                 </div>
@@ -84,7 +85,8 @@
                             id="batteryIconEnd">
                     </label>
                 </div>
-                <div class="row justify-content-center">
+                <div class="row justify-content-center"  data-toggle="tooltip" data-placement="left" 
+                title="How are you feeling now, before you get into bed?">
                         <input type="range" min="0" max="100" step="1"
                             id="batteryLevelEnd">
                 </div>
@@ -105,8 +107,10 @@
                 <table class="table table-hover table-striped events" id="eventsTable">
                     <thead>
                         <tr class="d-flex table-light">
-                            <th class="col">Activity</th>
-                            <th class="col-2">Cost/Recharge</th>
+                            <th class="col">
+                                Activity</th>
+                            <th class="col-2">
+                                Cost/Recharge</th>
                             <th class="col-1"></th>
                         </tr>
                     </thead>
@@ -115,9 +119,14 @@
                             <td class="col-9">
                                 <div class="input-group">
                                     <input type="text" class="form-control eventNames" 
-                                        list="previousEvents" placeholder="What happened, bro?">   
+                                        list="previousEvents" placeholder="What happened, bro?"
+                                        data-toggle="tooltip" data-placement="top" 
+                                        title="Write down anything noteworthy to you. Re-use activities where possible for the best measurements.">   
                                         <div class="input-group-append">
-                                        <select class="form-select input-group-select eventNumbers" type="button">
+                                        <select class="form-select input-group-select eventNumbers" 
+                                        data-toggle="tooltip" data-placement="top" 
+                                        title="How many times did you do this? Cost/recharge is for each time."
+                                        type="button">
                                             <option value="1" selected>Once</option>
                                             <option value="2">Twice</option>
                                             <option value="3">Thrice</option>
@@ -127,6 +136,8 @@
                                 </div>
                             </td>
                             <td class="col-2"><input type="number" class="form-control eventValues" 
+                                data-toggle="tooltip" data-placement="top" 
+                                title="Negative numbers are costs, positive numbers recharge. If you dont know, leave it black and I'll calculate it for you."
                                 placeholder="auto" min="-100" max="100"></td>
                             <td class="col-1"><!-- No removing the first row. --></td>
                         </tr>
@@ -317,6 +328,23 @@
     <datalist id="previousEvents">
     </datalist>
 
+
+    <!-- Footer time -->
+    <footer class="footer">
+        <div class="container">
+            <hr>
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    <p>Created by <a target="_blank" href="https://github.com/HarrisonHG/">Harrison HG</a></p>
+                </div>
+                <div class="col-auto">
+                    <p>Source code available on <a target="_blank" href="https://github.com/HarrisonHG/human-battery-tester">GitHub</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
     <script>
         // Small addition for removing a row from the table.
         /// TODO: Shove this into the main script.
@@ -345,5 +373,11 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" 
         crossorigin="anonymous"></script>
 
+    <!-- Enabling some bootstrap extras-->
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
 
 </body>
