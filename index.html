@@ -26,7 +26,6 @@
         </div>
         <div id="liveAlertPlaceholder">
 
-
     <!-- Boostrap's Icons -->
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="check-circle-fill" viewBox="0 0 16 16">
@@ -317,8 +316,8 @@
                 </div>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-danger wipe-memory" id="clearEventsBtn">
-                    Wipe Memory
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#optionsModal">
+                    Options
                 </button>
             </div>
         </div>
@@ -328,7 +327,6 @@
     <datalist id="previousEvents">
     </datalist>
 
-
     <!-- Footer time -->
     <footer class="footer">
         <div class="container">
@@ -337,6 +335,11 @@
                 <div class="col-auto">
                     <p>Created by <a target="_blank" href="https://github.com/HarrisonHG/">Harrison HG</a></p>
                 </div>
+                <!-- Saving this advanced options until we really need it. -->
+                <!-- <div class="col-auto form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="advancedOptions">
+                        <label class="form-check-label" for="advancedOptions">Show Advanced Options</label>
+                </div> -->
                 <div class="col-auto">
                     <p>Source code available on <a target="_blank" href="https://github.com/HarrisonHG/human-battery-tester">GitHub</a></p>
                 </div>
@@ -344,6 +347,35 @@
         </div>
     </footer>
 
+    <!-- Options Modal -->
+    <div class="modal fade" id="optionsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row justify-content-around">
+                <div class="col-auto form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" checked>
+                    <label class="form-check-label" for="askQuestions">Ask questions when too many days are unprocessed</label>
+                </div>
+            </div>
+            <div class="modal-footer row justify-content-between">
+                <div class="col-auto">
+                    <button type="button" class="btn btn-danger wipe-memory" id="clearEventsBtn">
+                        Wipe Memory
+                    </button>
+                </div>
+                    <div class="col-auto">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <script>
         // Small addition for removing a row from the table.

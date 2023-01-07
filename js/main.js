@@ -14,6 +14,9 @@ let DEFAULT_ENERGY_LEVEL = 50;
 let morning_energy_level = null;
 let current_energy_level = null;
 
+// ----- Settings -----
+let ask_questions = true;
+
 // ----- Saving & Loading -----
 
 // Save events to the user's local storage
@@ -522,6 +525,26 @@ function set_ui_on_load() {
 
 }
 
+function enable_advanced_options() {
+    
+    let advanced_options = document.getElementsByClassName("advanced-option");
+
+    if (document.getElementById("advancedOptions").checked) {
+        // Show all items that have the class "advanced-option"
+        for (let i = 0; i < advanced_options.length; i++) {
+            advanced_options[i].classList.add("d-flex");
+            advanced_options[i].classList.remove("d-none");
+        }
+    }
+    else {
+        // Hide all items that have the class "advanced-option"
+        for (let i = 0; i < advanced_options.length; i++) {
+            advanced_options[i].classList.add("d-none");
+            advanced_options[i].classList.remove("d-flex");
+        }
+    }
+}
+
 // ----- Event Listeners -----
 //document.getElementById("loadEventsBtn").addEventListener("click", load_events);
 document.getElementById("saveEventsBtn").addEventListener("click", save_events);
@@ -531,6 +554,24 @@ document.getElementById("clearEventsBtn").addEventListener("click", clear_all_ev
 document.getElementById("calculateBtn").addEventListener("click", show_energy_results, true);
 document.getElementById("createBackupBtn").addEventListener("click", create_backup);
 document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
+
+// Options
+// document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
+
+// Raise/Lower the flag for asking questions
+function to_ask_or_not_to_ask() {
+    if (document.getElementById("askQuestions").checked) {
+        ask_questions = true;
+        console.log("Asking questions");
+    }
+    else {
+        ask_questions = false;
+        console.log("Not asking questions");       
+    }
+}
+document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
+
+
 
 // We want to do a quick save whenever the user leaves the page
 // window.addEventListener("beforeunload", function (e) {
