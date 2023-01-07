@@ -86,26 +86,15 @@ export const alert = (message, type) => {
   }
 }
 
-// Bootstrap's range inputs
+// Range input data-values
 document.querySelectorAll('input[type=range]').forEach(e => {
     e.setAttribute('data-value', e.value + "%");
     e.addEventListener('input', () => {
-
-      // Set the numerical value
       e.setAttribute('data-value', e.value + "%");
-
-      // // Set the color
-      // let color = 'var(--primary-color)';
-      // if (e.value < 50) {
-      //   color = 'var(--warning-color)';
-      // }
-      // if (e.value < 25) {
-      //   color = 'var(--danger-color)';
-      // }
-      // e.style.setProperty('color', color);
     });
   });
 
+// Batter gauge pictures
 document.getElementById("batteryLevelStart").addEventListener("input", function() {
   document.getElementById("batteryIconStart").src = get_battery_gauge_picture(this.value, 1);
   

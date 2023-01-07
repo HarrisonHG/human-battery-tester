@@ -3,18 +3,11 @@
   Modified for use by me.
 */
 
-html {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Work Sans', sans-serif;
-  text-align: center;
-}
 html h4 {
   margin: 0;
   color: #999;
   font-weight: 500;
+  text-align: center;
 }
 html h4:after {
   content: "%";

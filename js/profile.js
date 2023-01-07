@@ -1,4 +1,4 @@
-import { Activity } from './event.js';
+import { Activity } from './activity.js';
 import { alert } from './utilities.js'
 
 /*

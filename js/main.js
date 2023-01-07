@@ -1,6 +1,8 @@
-import { Activity } from './event.js';
+import { Activity } from './activity.js';
 import { Profile } from './profile.js';
-import { alert, get_battery_gauge_picture, get_battery_gauge_descriptor } from './utilities.js'
+import { 
+    alert, get_battery_gauge_picture, get_battery_gauge_descriptor, clamp 
+} from './utilities.js'
 
 // ----- Main -----
 
@@ -452,6 +454,7 @@ function set_ui_on_load() {
         // Estimate today's energy level based on yesterday's end and our sleep quality
         let estimated_starting_energy = parseFloat(my_profile.energy_before_sleep.value)
             + parseFloat(my_profile.sleep.estimate_value());
+        estimated_starting_energy = clamp(estimated_starting_energy, 0, 100);
         DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
 
         // Starting energy
