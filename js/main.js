@@ -1,4 +1,4 @@
-import { Event } from './event.js';
+import { Activity } from './event.js';
 import { Profile } from './profile.js';
 import { alert, get_battery_gauge_picture, get_battery_gauge_descriptor } from './utilities.js'
 
@@ -421,10 +421,10 @@ function parse_ui() {
         for (let j = 0; j < event_numbers[i].value; j++) {
             // If the event value is empty, add it as an auto event and we'll calculate it later
             if (event_values[i].value == "") {
-                todays_events.push(new Event(event_names[i].value, "auto"));
+                todays_events.push(new Activity(event_names[i].value, "auto"));
             }
             else {
-                todays_events.push(new Event(event_names[i].value, event_values[i].value));
+                todays_events.push(new Activity(event_names[i].value, event_values[i].value));
             }
         }
     }
@@ -474,6 +474,12 @@ function set_ui_on_load() {
         document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
         document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
 
+        // There are a few things that change when the battery level changes, so we'll
+        // trigger a change event on the battery level to make sure they get updated
+        let battery_level_start = document.getElementById("batteryLevelStart");
+        battery_level_start.dispatchEvent(new Event("change"));
+        let batter_level_end = document.getElementById("batteryLevelEnd");
+        batter_level_end.dispatchEvent(new Event("change"));
             
         // debug
         console.log("Last energy level logged was on " + nice_date 

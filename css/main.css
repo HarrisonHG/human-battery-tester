@@ -62,24 +62,6 @@ hr {
 
 /* Inputs */
 
-input[type="range"]::after {
-  content: attr(data-value);
-  background-image: attr(data-image);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  margin-right: -50px;
-  padding-left: 10px;
-
-  height: 2em;
-  line-height: 2em;
-}
-
-input[type="range"] {
-  width: 80%;
-  height: 2em;
-}
-
 img.range-image {
   width: 100%;
   height: 100%;
@@ -90,7 +72,7 @@ div.join-box {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 6em;
+  margin-bottom: 11em;
 }
 
 .removeEventBtn {

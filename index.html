@@ -14,6 +14,7 @@
   
     <!-- Our styling -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/range_slider.css">
 
 </head>
 <body>
@@ -58,10 +59,11 @@
                     </label>
                 </div>
                 <div class="row justify-content-center">
-                    <input type="range" class="form-range" min="0" max="100" step="1"
+                    <input type="range" min="0" max="100" step="1"
                         id="batteryLevelStart">
                 </div>
                 <div class="row justify-content-center">
+                    <h4 id="batteryLevelStartPercentage"></h4>
                     <p class="batteryLevelDescriptor" id="batteryLevelStartDescriptor"></p>
                     <p class="batteryLevelComment" id="batteryLevelStartComment"></p>
                 </div>
@@ -83,10 +85,11 @@
                     </label>
                 </div>
                 <div class="row justify-content-center">
-                        <input type="range" class="form-range" min="0" max="100" step="1"
+                        <input type="range" min="0" max="100" step="1"
                             id="batteryLevelEnd">
                 </div>
                 <div class="row justify-content-center">
+                    <h4 id="batteryLevelEndPercentage"></h4>
                     <p class="batteryLevelDescriptor" id="batteryLevelEndDescriptor"></p>
                     <p class="batteryLevelComment" id="batteryLevelEndComment"></p>
                 </div>
@@ -333,9 +336,14 @@
         }
     </script>
     
+    <!-- Misc -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src="/js/range_slider.js"></script>
+
     <!-- Bundled Bootsrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" 
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" 
         crossorigin="anonymous"></script>
+
 
 </body>

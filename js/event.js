@@ -1,7 +1,7 @@
 // The maximum number of values to store for an event
 let EVENT_MEMORY_SIZE = 10;
 
-export class Event {
+export class Activity {
 
     // ----- Constructors -----
     constructor(name, value = null, fixed = false) {
@@ -202,7 +202,7 @@ export class Event {
         }
 
         let obj = JSON.parse(json);
-        let event = new Event(obj.name, obj.values, obj.fixed_value);
+        let event = new Activity(obj.name, obj.values, obj.fixed_value);
         event.note = obj.note;
         return event;
     }

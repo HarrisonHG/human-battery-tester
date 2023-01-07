@@ -1,4 +1,4 @@
-import { Event } from './event.js';
+import { Activity } from './event.js';
 import { alert } from './utilities.js'
 
 /*
@@ -24,7 +24,7 @@ export class Profile {
         this.events = {};
         
         // All humans sleep and it holds a special importance.
-        this.sleep = new Event("Sleep Quality");
+        this.sleep = new Activity("Sleep Quality");
 
         // The last "current energy level" measurement, used to indicate last night's sleep quality
         this.energy_before_sleep = {
@@ -63,13 +63,13 @@ export class Profile {
         }
         else {
             /// ...with a starting value
-            this.events[name] = new Event(name, value, false);
+            this.events[name] = new Activity(name, value, false);
         }
     }
 
     // Create a blank event
     add_event(name) {
-        this.events[name] = new Event(name);
+        this.events[name] = new Activity(name);
     }
 
     // Take an array of events and energy measurements and save them for later processing
@@ -257,11 +257,11 @@ export class Profile {
             }
             
             for (let event in profile_str.events) {
-                let tmp = Event.from_json(profile_str.events[event]);
+                let tmp = Activity.from_json(profile_str.events[event]);
                 if (tmp !== null)
                     loaded_profile.events[event] = tmp;
             }
-            loaded_profile.sleep = Event.from_json(profile_str.sleep);
+            loaded_profile.sleep = Activity.from_json(profile_str.sleep);
             loaded_profile.my_name = profile_str.name;
 
             // Validating this little object. Can sometimes get lost in transit.
@@ -304,7 +304,7 @@ export class Profile {
                 tmp["date"] = new Date(profile_str.days[day].date);
                 tmp["events"] = profile_str.days[day].events;
                 for (let event in profile_str.days[day].events) {
-                    tmp["events"][event] = Event.from_json(profile_str.days[day].events[event]);
+                    tmp["events"][event] = Activity.from_json(profile_str.days[day].events[event]);
                 }
                 tmp["starting_energy"] = profile_str.days[day].starting_energy;
                 tmp["ending_energy"] = profile_str.days[day].ending_energy;
