@@ -399,7 +399,7 @@ function add_event_row() {
 
     name_cell.classList.add("col");
     value_cell.classList.add("col-2");
-    remove_cell.classList.add("col-1");
+    remove_cell.classList.add("col-2");
 
     // Name cell
     let div1 = document.createElement("div");
@@ -411,6 +411,9 @@ function add_event_row() {
     input.setAttribute("type", "text");
     input.setAttribute("list", "previousEvents");
     input.setAttribute("placeholder", "Oh snap! Then what?");
+    input.setAttribute("data-toggle", "tooltip");
+    input.setAttribute("data-placement", "top");
+    input.setAttribute("title", "Write down anything noteworthy to you. Re-use activities where possible for the best measurements.");
     input.addEventListener("change", estimate_activity_energy);
     div1.appendChild(input);
 
@@ -422,6 +425,9 @@ function add_event_row() {
     select.classList.add("input-group-select");
     select.classList.add("eventNumbers");
     select.setAttribute("type", "button");
+    select.setAttribute("data-toggle", "tooltip");
+    select.setAttribute("data-placement", "top");
+    select.setAttribute("title", "How many times did you do this? Cost/recharge is for each time.");
 
     let option1 = document.createElement("option");
     option1.setAttribute("value", "1");
@@ -474,6 +480,9 @@ function add_event_row() {
         input.value = clamp(input.value, -100, 100);        
         estimate_activity_energy();        
     });
+    input.setAttribute("data-toggle", "tooltip");
+    input.setAttribute("data-placement", "top");
+    input.setAttribute("title", "Negative numbers are costs, positive numbers recharge. If you dont know, leave it blank and I'll calculate it for you.");
     value_cell.appendChild(input);
 
     // value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
@@ -494,10 +503,7 @@ function add_event_row() {
     // remove_cell.innerHTML = "<button class='removeEventBtn btn-danger form-control' " + 
     //     "onclick=\"remove_event_row(this);\">-</button>";
 
-    /// TODO: Fix this. Make it work here instead of in the HTML.
-    // Add an event listener to the remove button
-    // let remove_btn = remove_cell.getElementsByClassName("removeEventBtn")[0];
-    // remove_btn.addEventListener("click", remove_event_row (row));
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 // Small addition for removing a row from the table.
@@ -755,13 +761,12 @@ function should_we_show_running_total() {
     }
     else {
         user_options.show_running_total = false;
-        console.log("Not showing a running total");       
+        console.log("Not showing a running total");
     }
 
     estimate_activity_energy();
     save_settings();
 }
-
 
 // ----- Event Listeners -----
 
@@ -777,12 +782,12 @@ document.getElementById("askQuestions").addEventListener("change", to_ask_or_not
 document.getElementById("showRunningTotal").addEventListener("change", should_we_show_running_total);
 // document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
 
-document.getElementById("batteryLevelEnd").addEventListener("change", estimate_activity_energy);
+document.getElementById("batteryLevelStart").addEventListener("change", estimate_activity_energy);
 let vals = document.getElementsByClassName("eventValues");
 for (let i = 0; i < vals.length; i++) {
     vals[i].addEventListener("change", function() {
         vals[i].value = clamp(vals[i].value, -100, 100);        
-        estimate_activity_energy();        
+        estimate_activity_energy();
     });
 }
 let nums = document.getElementsByClassName("eventNumbers");

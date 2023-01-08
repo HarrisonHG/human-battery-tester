@@ -77,6 +77,14 @@ p.keyEstimationValue {
   text-align: center;
   font-style: italic;
 }
+.last-th {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.table-responsive
+{
+    overflow-x: auto;
+}
 
 /* Inputs */
 
