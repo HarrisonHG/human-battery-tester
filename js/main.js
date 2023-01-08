@@ -400,6 +400,7 @@ function add_event_row() {
     name_cell.classList.add("col");
     value_cell.classList.add("col-2");
     remove_cell.classList.add("col-2");
+    remove_cell.classList.add("col-md-1");
 
     // Name cell
     let div1 = document.createElement("div");
@@ -473,7 +474,7 @@ function add_event_row() {
     input.classList.add("eventValues");
     input.classList.add("form-control");
     input.setAttribute("type", "number");
-    input.setAttribute("placeholder", "auto");
+    input.setAttribute("placeholder", "?");
     input.setAttribute("min", "-100");
     input.setAttribute("max", "100");
     input.addEventListener("change", function() {
@@ -704,7 +705,7 @@ function estimate_activity_energy() {
         let starting_energy = parseInt(document.getElementById("batteryLevelStart").value);
         let estimated_ending_energy = starting_energy - total_energy;
         let estimated_next_morning_energy = 
-            estimated_ending_energy + my_profile.sleep.estimate_value();
+            parseInt(estimated_ending_energy + my_profile.sleep.estimate_value());
         let next_morning_comment = "";
         
         if (estimated_next_morning_energy < starting_energy) {
