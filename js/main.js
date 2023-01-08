@@ -470,8 +470,11 @@ function add_event_row() {
     input.setAttribute("placeholder", "auto");
     input.setAttribute("min", "-100");
     input.setAttribute("max", "100");
+    input.addEventListener("change", function() {
+        input.value = clamp(input.value, -100, 100);        
+        estimate_activity_energy();        
+    });
     value_cell.appendChild(input);
-    value_cell.addEventListener("change", estimate_activity_energy);
 
     // value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
     //     "placeholder='auto'  min='-100' max='100'>";
@@ -777,7 +780,10 @@ document.getElementById("showRunningTotal").addEventListener("change", should_we
 document.getElementById("batteryLevelEnd").addEventListener("change", estimate_activity_energy);
 let vals = document.getElementsByClassName("eventValues");
 for (let i = 0; i < vals.length; i++) {
-    vals[i].addEventListener("change", estimate_activity_energy);
+    vals[i].addEventListener("change", function() {
+        vals[i].value = clamp(vals[i].value, -100, 100);        
+        estimate_activity_energy();        
+    });
 }
 let nums = document.getElementsByClassName("eventNumbers");
 for (let i = 0; i < nums.length; i++) {
