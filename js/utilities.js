@@ -46,6 +46,7 @@ export const alert = (message, type) => {
   wrapper.classList.add('top-15');
   wrapper.classList.add('start-50');
   wrapper.classList.add('translate-middle-x');
+  wrapper.classList.add('stay-ontop');
 
   let button_classes = "close btn-close alert-close";
   if (type == "success") {

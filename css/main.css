@@ -154,6 +154,9 @@ img.titleIcon {
 #liveAlertPlaceholder {
   width:100%;
 }
+.stay-ontop {
+  z-index: 9999;
+}
 
 svg.bi {
   width: 1em;
