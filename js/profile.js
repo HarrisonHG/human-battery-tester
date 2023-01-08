@@ -341,6 +341,11 @@ export class Profile {
             if (typeof this.days[day].events === "string") {
                 this.days[day].events = JSON.parse(this.days[day].events);
             }
+            for (let ev in this.days[day].events) {
+                if (typeof this.days[day].events[ev] === "string") {
+                    this.days[day].events[ev] = JSON.parse(this.days[day].events[ev]);
+                }
+            }
 
             this.days[day].events.sort((a, b) => a.name.localeCompare(b.name));
         }
