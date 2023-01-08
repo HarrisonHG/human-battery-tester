@@ -16,8 +16,8 @@ var current_energy_level = null;
 
 // ----- Settings -----
 var user_options_default = { 
-    ask_questions: true,
-    show_running_total: true
+    ask_questions: false,
+    show_running_total: false
 }
 var user_options = user_options_default;
 
@@ -401,28 +401,105 @@ function add_event_row() {
     value_cell.classList.add("col-2");
     remove_cell.classList.add("col-1");
 
-    name_cell.innerHTML = 
-        "<div class='input-group'>" +
-        "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
-        "   <div class='input-group-append'>" +
-        "       <select class='form-select input-group-select eventNumbers' type='button'>" +
-        "           <option value='1' selected>Once</option>" +
-        "           <option value='2'>Twice</option>" +
-        "           <option value='3'>Thrice</option>" +
-        "           <option value='5'>A lot!</option>" +
-        "       </select>" +
-        "   </div>" +
-        "</div>";
+    // Name cell
+    let div1 = document.createElement("div");
+    div1.classList.add("input-group");
 
-    value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
-        "placeholder='auto'  min='-100' max='100'>";
-    remove_cell.innerHTML = "<button class='removeEventBtn btn-danger form-control' " + 
-        "onclick=\"remove_event_row(this);\">-</button>";
+    let input = document.createElement("input");
+    input.classList.add("eventNames");
+    input.classList.add("form-control");
+    input.setAttribute("type", "text");
+    input.setAttribute("list", "previousEvents");
+    input.setAttribute("placeholder", "Oh snap! Then what?");
+    input.addEventListener("change", estimate_activity_energy);
+    div1.appendChild(input);
+
+    let div2 = document.createElement("div");
+    div2.classList.add("input-group-append");
+
+    let select = document.createElement("select");
+    select.classList.add("form-select");
+    select.classList.add("input-group-select");
+    select.classList.add("eventNumbers");
+    select.setAttribute("type", "button");
+
+    let option1 = document.createElement("option");
+    option1.setAttribute("value", "1");
+    option1.setAttribute("selected", "selected");
+    option1.innerHTML = "Once";
+    select.appendChild(option1);
+
+    let option2 = document.createElement("option");
+    option2.setAttribute("value", "2");
+    option2.innerHTML = "Twice";
+    select.appendChild(option2);
+
+    let option3 = document.createElement("option");
+    option3.setAttribute("value", "3");
+    option3.innerHTML = "Thrice";
+    select.appendChild(option3);
+
+    let option4 = document.createElement("option");
+    option4.setAttribute("value", "5");
+    option4.innerHTML = "A lot!";
+    select.addEventListener("change", estimate_activity_energy);
+    select.appendChild(option4);
+
+    div2.appendChild(select);
+    div1.appendChild(div2);
+    name_cell.appendChild(div1);
+
+    // name_cell.innerHTML = 
+    //     "<div class='input-group'>" +
+    //     "   <input type='text' class='eventNames form-control' list='previousEvents' placeholder='Oh snap! Then what?'>" +
+    //     "   <div class='input-group-append'>" +
+    //     "       <select class='form-select input-group-select eventNumbers' type='button'>" +
+    //     "           <option value='1' selected>Once</option>" +
+    //     "           <option value='2'>Twice</option>" +
+    //     "           <option value='3'>Thrice</option>" +
+    //     "           <option value='5'>A lot!</option>" +
+    //     "       </select>" +
+    //     "   </div>" +
+    //     "</div>";
+
+    // Value cell
+    input = document.createElement("input");
+    input.classList.add("eventValues");
+    input.classList.add("form-control");
+    input.setAttribute("type", "number");
+    input.setAttribute("placeholder", "auto");
+    input.setAttribute("min", "-100");
+    input.setAttribute("max", "100");
+    value_cell.appendChild(input);
+    value_cell.addEventListener("change", estimate_activity_energy);
+
+    // value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
+    //     "placeholder='auto'  min='-100' max='100'>";
+
+    // Remove cell
+    let button = document.createElement("button");
+    button.classList.add("removeEventBtn");
+    button.classList.add("btn-danger");
+    button.classList.add("form-control");
+    button.addEventListener("click", function() { 
+        remove_event_row(row);
+        estimate_activity_energy();
+    });
+    button.innerHTML = "-";
+    remove_cell.appendChild(button);
+
+    // remove_cell.innerHTML = "<button class='removeEventBtn btn-danger form-control' " + 
+    //     "onclick=\"remove_event_row(this);\">-</button>";
 
     /// TODO: Fix this. Make it work here instead of in the HTML.
     // Add an event listener to the remove button
     // let remove_btn = remove_cell.getElementsByClassName("removeEventBtn")[0];
     // remove_btn.addEventListener("click", remove_event_row (row));
+}
+
+// Small addition for removing a row from the table.
+function remove_event_row(row) {
+    row.parentNode.removeChild(row);
 }
 
 // Read all the things from the UI
@@ -573,18 +650,85 @@ function enable_advanced_options() {
     save_settings();
 }
 
-// ----- Event Listeners -----
-//document.getElementById("loadEventsBtn").addEventListener("click", load_events);
-document.getElementById("saveEventsBtn").addEventListener("click", save_events);
-document.getElementById("saveEventsBtnAdvanced").addEventListener("click", save_events);
-document.getElementById("addEventBtn").addEventListener("click", add_event_row);
-document.getElementById("clearEventsBtn").addEventListener("click", clear_all_events);
-document.getElementById("calculateBtn").addEventListener("click", show_energy_results, true);
-document.getElementById("createBackupBtn").addEventListener("click", create_backup);
-document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
+function estimate_activity_energy() {
 
-// Options
-// document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
+    // The user did want this, right?
+    if (user_options.show_running_total !== true) {
+        document.getElementById("activityEstimateRow").classList.remove("d-flex");
+        document.getElementById("activityEstimateRow").classList.add("d-none");
+        return;
+    }
+
+    // Run through each activity...
+    let total_energy = 0;
+    let have_something = false;
+    let eventNames = document.getElementsByClassName("eventNames");
+    let eventNumbers = document.getElementsByClassName("eventNumbers");
+    let eventValues = document.getElementsByClassName("eventValues");
+    for (let i = 0; i < eventNames.length; i++) {
+
+        if (eventNames[i].value === "") {
+            continue;
+        }
+
+        // Any entered value takes priority
+        if (eventValues[i].value !== "") {
+            total_energy += parseInt(eventValues[i].value) * parseInt(eventNumbers[i].value);
+            have_something = true;
+        }
+        else {
+            // Do we know the value of this one?
+            let activity = eventNames[i].value;
+            let evnt = my_profile.get_event(activity);
+            if (evnt !== null) {
+                total_energy += parseInt(evnt.estimate_value()) * parseInt(eventNumbers[i].value);
+                have_something = true;
+            }  
+        }
+    }
+
+    // Update the UI
+    if (have_something) {
+
+        // If we have something, there are some other calculations we can do for the user
+        let starting_energy = parseInt(document.getElementById("batteryLevelStart").value);
+        let estimated_ending_energy = starting_energy - total_energy;
+        let estimated_next_morning_energy = 
+            estimated_ending_energy + my_profile.sleep.estimate_value();
+        let next_morning_comment = "";
+        
+        if (estimated_next_morning_energy < starting_energy) {
+            next_morning_comment = "You're in an energy deficit. Get an extra hour of sleep!";
+        }
+        else if (estimated_next_morning_energy > starting_energy) {
+            next_morning_comment = "You're in an energy surplus. Excellent!";   
+        }
+        else {
+            next_morning_comment = "Your daily energy output is perfectly balanced, as all things should be.";
+        }
+
+        // Show the estimate row
+        document.getElementById("activityEstimateRow").classList.remove("d-none");
+        document.getElementById("activityEstimateRow").classList.add("d-flex");
+
+        document.getElementById("activityEnergyTotal").innerHTML = 
+            total_energy + "%";
+        document.getElementById("endOfDayPrediction").innerHTML = 
+            estimated_ending_energy + "%";
+        document.getElementById("nextDayStartPrediction").innerHTML =  
+            estimated_next_morning_energy + "%";
+        document.getElementById("nextDayStartPredictionComment").innerHTML = 
+            next_morning_comment;
+            
+    }
+    else {
+        // Hide the estimate row
+        document.getElementById("activityEstimateRow").classList.remove("d-flex");
+        document.getElementById("activityEstimateRow").classList.add("d-none");        
+    }
+}
+
+// ----- Options -----
 
 // Raise/Lower the flag for asking questions
 function to_ask_or_not_to_ask() {
@@ -599,8 +743,6 @@ function to_ask_or_not_to_ask() {
 
     save_settings();
 }
-document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
-
 
 // Raise/Lower the flag for showing a running total
 function should_we_show_running_total() {
@@ -613,9 +755,38 @@ function should_we_show_running_total() {
         console.log("Not showing a running total");       
     }
 
+    estimate_activity_energy();
     save_settings();
 }
+
+
+// ----- Event Listeners -----
+
+//document.getElementById("loadEventsBtn").addEventListener("click", load_events);
+document.getElementById("saveEventsBtn").addEventListener("click", save_events);
+document.getElementById("saveEventsBtnAdvanced").addEventListener("click", save_events);
+document.getElementById("addEventBtn").addEventListener("click", add_event_row);
+document.getElementById("clearEventsBtn").addEventListener("click", clear_all_events);
+document.getElementById("calculateBtn").addEventListener("click", show_energy_results, true);
+document.getElementById("createBackupBtn").addEventListener("click", create_backup);
+document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
+document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
 document.getElementById("showRunningTotal").addEventListener("change", should_we_show_running_total);
+// document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
+
+document.getElementById("batteryLevelEnd").addEventListener("change", estimate_activity_energy);
+let vals = document.getElementsByClassName("eventValues");
+for (let i = 0; i < vals.length; i++) {
+    vals[i].addEventListener("change", estimate_activity_energy);
+}
+let nums = document.getElementsByClassName("eventNumbers");
+for (let i = 0; i < nums.length; i++) {
+    nums[i].addEventListener("change", estimate_activity_energy);
+}
+let names = document.getElementsByClassName("eventNames");
+for (let i = 0; i < names.length; i++) {
+    names[i].addEventListener("change", estimate_activity_energy);
+}
 
 // We want to do a quick save whenever the user leaves the page
 // window.addEventListener("beforeunload", function (e) {

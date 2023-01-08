@@ -60,6 +60,24 @@ hr {
   font-style: italic;
 }
 
+#activityEstimateRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+span.keyEstimationValue {
+  font-weight: bold;
+  font-size: large;
+}
+p.keyEstimationValue {
+  margin-bottom: 0;
+}
+#nextDayStartPredictionComment {
+  font-size: small;
+  text-align: center;
+  font-style: italic;
+}
+
 /* Inputs */
 
 img.range-image {

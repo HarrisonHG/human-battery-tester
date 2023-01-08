@@ -140,12 +140,21 @@
                                 placeholder="auto" min="-100" max="100"></td>
                             <td class="col-1"><!-- No removing the first row. --></td>
                         </tr>
-                    </tbody>
                 </table>
-                <div class="col d-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary btn-sm addEventBtn" id="addEventBtn">
-                        Add Event
-                    </button>
+                <div class="row">
+                    <div class="col d-flex">
+                        <button type="button" class="btn btn-secondary btn-sm addEventBtn" id="addEventBtn">
+                            Add Event
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="d-flex col activity-row" id="activityEstimateRow">
+                        <p class="keyEstimationValue">Activity energy estimate: <span class="keyEstimationValue" id="activityEnergyTotal"></span></p>
+                        <p class="keyEstimationValue">Predicted end-of-day energy: <span class="keyEstimationValue" id="endOfDayPrediction"></span></p>
+                        <p class="keyEstimationValue">After sleep, you should be back to: <span class="keyEstimationValue" id="nextDayStartPrediction"></span></p>
+                        <p class="keyEstimationValue" id="nextDayStartPredictionComment"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -349,22 +358,22 @@
     <!-- Options Modal -->
     <div class="modal fade" id="optionsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" checked>
-                    <label class="form-check-label" for="askQuestions">Ask questions when too many days are unprocessed</label>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="showRunningTotal" checked>
-                    <label class="form-check-label" for="showRunningTotal">Show a running end-of-day estimate as you add activities</label>
+                <div class="modal-body">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" disabled>
+                        <label class="form-check-label" for="askQuestions">Ask questions when too many days are unprocessed</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="showRunningTotal" checked>
+                        <label class="form-check-label" for="showRunningTotal">Show a running end-of-day estimate as you add activities</label>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer justify-content-between">
+                <div class="modal-footer justify-content-between">
                     <div class="col-auto">
                         <button type="button" class="btn btn-outline-danger wipe-memory" id="clearEventsBtn">
                             Wipe Memory
@@ -375,20 +384,10 @@
                             Close
                         </button>
                     </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-
-    <script>
-        // Small addition for removing a row from the table.
-        /// TODO: Shove this into the main script.
-        function remove_event_row(btn) {
-            let row = btn.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-        }
-
-    </script>
+    </div>
     
     <script type="module">
         import { load_events } from './js/main.js';
