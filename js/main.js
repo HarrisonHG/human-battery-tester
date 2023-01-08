@@ -563,7 +563,7 @@ function set_ui_on_load() {
         //     + " at " + my_profile.energy_before_sleep.value + "%.";
 
         // Estimate today's energy level based on yesterday's end and our sleep quality
-        let estimated_starting_energy = parseFloat(my_profile.energy_before_sleep.value)
+        estimated_starting_energy = parseFloat(my_profile.energy_before_sleep.value)
             + parseFloat(my_profile.sleep.estimate_value());
         estimated_starting_energy = clamp(estimated_starting_energy, 0, 100);
         DEFAULT_ENERGY_LEVEL = parseInt(estimated_starting_energy);
@@ -580,22 +580,23 @@ function set_ui_on_load() {
     }
 
     // Starting energy
-    document.getElementById("batteryLevelStart").value = estimated_starting_energy;
+    document.getElementById("batteryLevelStart").value = DEFAULT_ENERGY_LEVEL;
     document.getElementById("batteryIconStart").src = 
-        get_battery_gauge_picture(estimated_starting_energy, 1);
+        get_battery_gauge_picture(DEFAULT_ENERGY_LEVEL, 1);
     document.getElementById("batteryLevelStart").setAttribute(
-        "data-value", parseInt(estimated_starting_energy) + "%");
-    let words = get_battery_gauge_descriptor(estimated_starting_energy);
+        "data-value", parseInt(DEFAULT_ENERGY_LEVEL) + "%");
+    let words = get_battery_gauge_descriptor(DEFAULT_ENERGY_LEVEL);
     document.getElementById("batteryLevelStartDescriptor").innerHTML = words.descriptor;
     document.getElementById("batteryLevelStartComment").innerHTML = words.comment;
 
-    // Ending energy (set to the same so that it doesn't look janky, just changing the start)
-    document.getElementById("batteryLevelEnd").value = estimated_starting_energy;
+    // Ending energy (set to start - sleep in an attempt to encourage balanced days)
+    let ending_energy = DEFAULT_ENERGY_LEVEL - my_profile.sleep.estimate_value();
+    document.getElementById("batteryLevelEnd").value = ending_energy;
     document.getElementById("batteryIconEnd").src = 
-        get_battery_gauge_picture(estimated_starting_energy, 1);
+        get_battery_gauge_picture(ending_energy, 1);
     document.getElementById("batteryLevelEnd").setAttribute(
-        "data-value", parseInt(estimated_starting_energy) + "%");
-    words = get_battery_gauge_descriptor(estimated_starting_energy);
+        "data-value", parseInt(ending_energy) + "%");
+    words = get_battery_gauge_descriptor(ending_energy);
     document.getElementById("batteryLevelEndDescriptor").innerHTML = words.descriptor;
     document.getElementById("batteryLevelEndComment").innerHTML = words.comment;
 
