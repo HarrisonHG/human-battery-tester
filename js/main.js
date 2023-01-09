@@ -22,6 +22,7 @@ var user_options_default = {
 var user_options = user_options_default;
 
 // ----- Saving & Loading -----
+var user_has_saved = false;
 
 // Save JUST the settings
 // They will be loaded along with the events in load_events()
@@ -33,7 +34,8 @@ function save_settings() {
 function save_events() {
 
     // If it's today, let's just make sure the user wants to add another day.
-    if (my_profile.energy_before_sleep != null && my_profile.energy_before_sleep.date != null) {
+    if ( user_has_saved ||
+        (my_profile.energy_before_sleep != null && my_profile.energy_before_sleep.date != null)) {
         if (my_profile.energy_before_sleep.date.getTime() == new Date().getTime()) {
             if (!confirm("You've already logged today's events. Do you want to add another day?")) {
                 return;
@@ -100,6 +102,7 @@ function save_events() {
     document.getElementById("saveEventsBtn").disabled=true;
     document.getElementById("saveEventsBtnAdvanced").disabled=true;
     alert("Saved!", "success");
+    user_has_saved = true;
 }
 
 // Load events from the user's local storage
@@ -151,7 +154,9 @@ export function load_events() {
 // Download a copy of the user's data
 function create_backup() {
 
-    save_events();
+    if (!user_has_saved) {
+        save_events();
+    }
 
     // Package some data, then download it as a file.
     let backup_obj = {};
@@ -799,6 +804,15 @@ for (let i = 0; i < nums.length; i++) {
 let names = document.getElementsByClassName("eventNames");
 for (let i = 0; i < names.length; i++) {
     names[i].addEventListener("change", estimate_activity_energy);
+}
+
+// The following is a bit of a hack to detect when the user has changed something.
+// This will eventually be replaced by the date manager
+let inputs = document.getElementsByTagName("input");
+for (let i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener("change", function(e) {
+        user_has_saved = false;
+    });
 }
 
 // We want to do a quick save whenever the user leaves the page
