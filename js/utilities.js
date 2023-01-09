@@ -89,11 +89,11 @@ export const alert = (message, type) => {
 
 // Range input data-values
 document.querySelectorAll('input[type=range]').forEach(e => {
+  e.setAttribute('data-value', e.value + "%");
+  e.addEventListener('input', () => {
     e.setAttribute('data-value', e.value + "%");
-    e.addEventListener('input', () => {
-      e.setAttribute('data-value', e.value + "%");
-    });
   });
+});
 
 // Batter gauge pictures
 document.getElementById("batteryLevelStart").addEventListener("input", function() {

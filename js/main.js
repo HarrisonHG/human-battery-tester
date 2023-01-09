@@ -403,7 +403,8 @@ function add_event_row() {
     let remove_cell = row.insertCell(2);
 
     name_cell.classList.add("col");
-    value_cell.classList.add("col-2");
+    value_cell.classList.add("col-3");
+    value_cell.classList.add("col-md-2");
     remove_cell.classList.add("col-2");
     remove_cell.classList.add("col-md-1");
 
@@ -438,22 +439,22 @@ function add_event_row() {
     let option1 = document.createElement("option");
     option1.setAttribute("value", "1");
     option1.setAttribute("selected", "selected");
-    option1.innerHTML = "Once";
+    option1.innerHTML = "1";
     select.appendChild(option1);
 
     let option2 = document.createElement("option");
     option2.setAttribute("value", "2");
-    option2.innerHTML = "Twice";
+    option2.innerHTML = "2";
     select.appendChild(option2);
 
     let option3 = document.createElement("option");
     option3.setAttribute("value", "3");
-    option3.innerHTML = "Thrice";
+    option3.innerHTML = "3";
     select.appendChild(option3);
 
     let option4 = document.createElement("option");
     option4.setAttribute("value", "5");
-    option4.innerHTML = "A lot!";
+    option4.innerHTML = "4+";
     select.addEventListener("change", estimate_activity_energy);
     select.appendChild(option4);
 
@@ -475,22 +476,49 @@ function add_event_row() {
     //     "</div>";
 
     // Value cell
+    div1 = document.createElement("div");
+    div1.classList.add("input-group");
+
+    input = document.createElement("input");
+    input.setAttribute("type", "button");
+    input.classList.add("btn");
+    input.classList.add("btn-outline-secondary");
+    input.classList.add("positiveOrNegative");
+    input.classList.add("neutral");
+    input.classList.add("eventSigns");
+    input.setAttribute("value", "~");
+    input.setAttribute("data-toggle", "tooltip");
+    input.setAttribute("data-placement", "top");
+    input.setAttribute("title", "Negative numbers are costs, positive numbers recharge.");
+    input.addEventListener("click", function(e) {
+        switch_button(e);
+        estimate_activity_energy();
+    });
+    div1.appendChild(input);
+
     input = document.createElement("input");
     input.classList.add("eventValues");
     input.classList.add("form-control");
     input.setAttribute("type", "number");
     input.setAttribute("placeholder", "?");
-    input.setAttribute("min", "-100");
+    input.setAttribute("min", "0");
     input.setAttribute("max", "100");
-    input.addEventListener("change", function() {
-        input.value = clamp(input.value, -100, 100);        
-        estimate_activity_energy();        
+    input.addEventListener("change", function(e) {
+        if (input.value !== "")
+            input.value = clamp(input.value, 0, 100);
+        neutral_my_button(e);
+        estimate_activity_energy();
     });
     input.setAttribute("data-toggle", "tooltip");
     input.setAttribute("data-placement", "top");
     input.setAttribute("title", "Negative numbers are costs, positive numbers recharge. If you dont know, leave it blank and I'll calculate it for you.");
-    value_cell.appendChild(input);
+    div1.appendChild(input);
+    value_cell.appendChild(div1);
 
+    // <div class="input-group">
+    // <input type="button" class="btn btn-outline-danger positiveOrNegative negative" 
+    // value="-" data-toggle="tooltip" data-placement="top" 
+    // title="Negative numbers are costs, positive numbers recharge.">
     // value_cell.innerHTML = "<input type='number' class='eventValues form-control' " + 
     //     "placeholder='auto'  min='-100' max='100'>";
 
@@ -680,6 +708,7 @@ function estimate_activity_energy() {
     let have_something = false;
     let eventNames = document.getElementsByClassName("eventNames");
     let eventNumbers = document.getElementsByClassName("eventNumbers");
+    let eventSigns = document.getElementsByClassName("eventSigns");
     let eventValues = document.getElementsByClassName("eventValues");
     for (let i = 0; i < eventNames.length; i++) {
 
@@ -689,7 +718,8 @@ function estimate_activity_energy() {
 
         // Any entered value takes priority
         if (eventValues[i].value !== "") {
-            total_energy += parseInt(eventValues[i].value) * parseInt(eventNumbers[i].value);
+            let sign = eventSigns[i].value == "-" ? -1 : 1;
+            total_energy += parseInt(eventValues[i].value) * parseInt(eventNumbers[i].value) * sign;
             have_something = true;
         }
         else {
@@ -744,6 +774,66 @@ function estimate_activity_energy() {
     }
 }
 
+// Toggle the passed button between + and -
+function switch_button(e) {
+    let target = e.target;
+
+    // TBH I just don't like leaving undesirable situations lying around
+    let value_input = target.nextElementSibling;
+    if (value_input.value == "" || value_input.value == "0") {
+        value_input.value = 1;
+    }
+
+
+    if (target.classList.contains("positive")) {
+        // Is positive. Make it Negative.
+        target.classList.remove("positive");
+        target.classList.remove("btn-outline-success");
+        target.classList.add("btn-outline-danger");
+        target.classList.add("negative");
+        target.value = "-";
+    }
+    else {
+        // Is negative. Make it Positive.
+        target.classList.remove("negative");
+        target.classList.remove("btn-outline-danger");
+        target.classList.add("btn-outline-success");
+        target.classList.add("positive");
+        target.value = "+";
+    }
+}
+
+// Toggle the passed input's adjoining button between +/- and ~
+function neutral_my_button(e) {
+    let target = e.target;
+    let button = target.previousElementSibling;
+    if (target.value === "" || target.value === "0") {
+        // Is empty. Make it ~
+        button.classList.remove("btn-outline-success");
+        button.classList.remove("btn-outline-danger");
+        button.classList.add("btn-outline-secondary");
+        button.value = "~";
+    }
+    else {
+        // Is not empty. Make it +/-
+        button.classList.remove("btn-outline-secondary");
+        if (button.classList.contains("positive")) {
+            button.classList.add("btn-outline-success");
+            button.value = "+";
+        }
+        else if (button.classList.contains("neutral")) {
+            button.classList.remove("neutral");
+            button.classList.add("negative");
+            button.classList.add("btn-outline-danger");
+            button.value = "-";
+        }
+        else {
+            button.classList.add("btn-outline-danger");
+            button.value = "-";
+        }
+    }
+}
+
 // ----- Options -----
 
 // Raise/Lower the flag for asking questions
@@ -792,8 +882,10 @@ document.getElementById("showRunningTotal").addEventListener("change", should_we
 document.getElementById("batteryLevelStart").addEventListener("change", estimate_activity_energy);
 let vals = document.getElementsByClassName("eventValues");
 for (let i = 0; i < vals.length; i++) {
-    vals[i].addEventListener("change", function() {
-        vals[i].value = clamp(vals[i].value, -100, 100);        
+    vals[i].addEventListener("change", function(e) {
+        if (vals[i].value !== "")
+            vals[i].value = clamp(vals[i].value, 0, 100);
+        neutral_my_button(e);
         estimate_activity_energy();
     });
 }
@@ -812,6 +904,14 @@ let inputs = document.getElementsByTagName("input");
 for (let i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener("change", function(e) {
         user_has_saved = false;
+    });
+}
+
+let posNegSwitches = document.getElementsByClassName("positiveOrNegative");
+for (let i = 0; i < posNegSwitches.length; i++) {
+    posNegSwitches[i].addEventListener("click", function(e) {
+        switch_button(e);
+        estimate_activity_energy();
     });
 }
 

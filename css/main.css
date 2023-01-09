@@ -144,6 +144,12 @@ div.join-box {
   border-top-right-radius: 0;
 }
 
+@media (max-width: 575px) {
+  .eventValues {
+    padding-left: 0;
+  }
+}
+
 /* Images and icons */
 
 img.titleIcon {

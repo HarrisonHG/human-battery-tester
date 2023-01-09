@@ -114,29 +114,36 @@
                         </thead>
                         <tbody>
                             <tr class="d-flex activity-row">
-                                <td class="col-9">
+                                <td class="col">
                                     <div class="input-group">
                                         <input type="text" class="form-control eventNames" 
                                             list="previousEvents" placeholder="What happened, bro?"
                                             data-toggle="tooltip" data-placement="top" 
                                             title="Write down anything noteworthy to you. Re-use activities where possible for the best measurements.">   
-                                            <div class="input-group-append">
-                                            <select class="form-select input-group-select eventNumbers" 
+                                        <div class="input-group-append">
+                                            <select class="form-select input-group-select eventNumbers"
                                             data-toggle="tooltip" data-placement="top" 
                                             title="How many times did you do this? Cost/recharge is for each time."
                                             type="button">
-                                                <option value="1" selected>Once</option>
-                                                <option value="2">Twice</option>
-                                                <option value="3">Thrice</option>
-                                                <option value="5">A lot!</option>                            
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="5">4+</option>
                                             </select>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="col-2"><input type="number" class="form-control eventValues" 
-                                    data-toggle="tooltip" data-placement="top" 
-                                    title="Negative numbers are costs, positive numbers recharge. If you dont know, leave it black and I'll calculate it for you."
-                                    placeholder="?" min="-100" max="100"></td>
+                                <td class="col-3 col-md-2">
+                                    <div class="input-group">
+                                        <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral eventSigns" 
+                                                value="~" data-toggle="tooltip" data-placement="top" 
+                                                title="Negative numbers are costs, positive numbers recharge.">
+                                        <input type="number" class="form-control eventValues" 
+                                            data-toggle="tooltip" data-placement="top" 
+                                            title="If you dont know this, leave it black and we'll calculate it for you."
+                                            placeholder="?" min="0" max="100">
+                                    </div>
+                                </td>
                                 <td class="col-1"><!-- No removing the first row. --></td>
                             </tr>
                     </table>
