@@ -881,7 +881,8 @@ document.getElementById("restoreBackupBtn").addEventListener("click", restore_ba
 document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
 document.getElementById("showRunningTotal").addEventListener("change", should_we_show_running_total);
 document.getElementById("askAQuestionBtn").addEventListener("click", function() {
-    my_profile.ask_user_questions();
+    if (user_options.ask_questions)
+        my_profile.ask_user_questions();
 });
 // document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
 
@@ -921,6 +922,11 @@ for (let i = 0; i < posNegSwitches.length; i++) {
     });
 }
 
+// Modal event listeners
+document.getElementById("saveQuestionAnswer").addEventListener("click", function() {
+    let question_type = document.getElementById("questionModal").getAttribute("data-value");
+    my_profile.recieve_answer(question_type);
+});
 
 
 // We want to do a quick save whenever the user leaves the page

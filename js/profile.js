@@ -14,8 +14,8 @@ var EVENT_CONFIDENT_THRESHOLD = 1;
 
 // The types of questions we currently have
 const QUESTION = {
-    ONE_OF_TWO: 1,
-    COMMON_ACTIVITY: 2,
+    ONE_OF_TWO: "ONE_OF_TWO",
+    COMMON_ACTIVITY: "COMMON_ACTIVITY",
 }
 // How many unprocessed days before we start asking questions?
 var UNPROCESSED_DAY_PATIENCE = 3;
@@ -363,7 +363,7 @@ export class Profile {
 
         // For each day...
         for (let day_name = 0; day_name < days.length; day_name++) {
-            const day = days[day_name];
+            let day = days[day_name];
 
             if (day.events.length == 0) {
                 // No events? There's more to life than sleeping.
@@ -531,6 +531,8 @@ export class Profile {
             return a.events.length - b.events.length;
         });
 
+        let display_modal = false;
+
         // Question 1: What is the most popular event in the unprocessed days that exists in the shortest day?
         let most_popular_event = null;
         let most_popular_event_count = 0;
@@ -553,21 +555,68 @@ export class Profile {
         }
         // Let's ask this question if, say, 50% of the days have the same event
         if (most_popular_event_count > this.days.length / 2) {
-            let answer = prompt("You've done this activity " + most_popular_event + " a lot recently. Can you value it?");
-            if (answer !== null) {
-                let num_fixes = this.days.length;
-                this.add_or_update_event(most_popular_event, answer);
-                this.have_a_good_think();
-                num_fixes = this.days.length - num_fixes;
 
-                if (num_fixes > 0) {
-                    alert("Thanks to your response, I've processed " + num_fixes + " extra days!");
-                }
-                else {
-                    alert("Thanks! A bunch of days just got a little closer to completion.");
-                }
-            }
+            // If we format the modal and present it, we can leave the modal to call an update.
+            document.getElementById("questionModalQuestion").innerText = 
+            "You've done this activity " + most_popular_event + " a lot recently. Can you value it?";
+            document.getElementById("questionEventDiv1").classList.remove("d-none");
+            document.getElementById("questionEvent1").innerText = most_popular_event;
+            document.getElementById("questionModal").setAttribute("data-value", QUESTION.COMMON_ACTIVITY);
+            
+            // Reset the input fields
+            document.getElementById("questionEventSign1").value="~";
+            document.getElementById("questionEventValue1").value="";
+            document.getElementById("questionEventSign1").classList.add("neutral");
+            document.getElementById("questionEventSign1").classList.add("btn-outline-neutral");
+
+            document.getElementById("questionEventSign1").classList.remove("positive");
+            document.getElementById("questionEventSign1").classList.remove("negative");
+            document.getElementById("questionEventSign1").classList.remove("btn-outline-success");
+            document.getElementById("questionEventSign1").classList.remove("btn-outline-danger");
+
+            document.getElementById("questionEventDiv2").classList.add("d-none");
+
+            display_modal = true;
         }
 
+        if (display_modal) {
+            const myModal = new bootstrap.Modal(document.getElementById('questionModal'));
+            myModal.show();
+        }
+    }
+
+    // Recieve an answer about a question we've asked
+    // This function will be called by the modal
+    // answer must be one of the QUESTION constants
+    recieve_answer(answer) {
+        if (answer == null) {
+            return;
+        }
+
+        // If the answer is a common activity, we'll add it to the list
+        if (answer == QUESTION.COMMON_ACTIVITY) {
+            // This value only has one answer.
+            let event_name = document.getElementById("questionEvent1").innerText;
+            let event_value = document.getElementById("questionEventValue1").value;
+            let event_sign = document.getElementById("questionEventSign1").value == 
+                "+" ? 1 : -1;
+            if (event_value == "") {
+                // We're not going to force the issue.
+                return;
+            }
+
+            // Excellent. A cooperative user. <3
+            let num_fixes = this.days.length;
+            this.add_or_update_event(event_name, event_value * event_sign);
+            this.have_a_good_think();
+
+            num_fixes = this.days.length - num_fixes;
+            if (num_fixes > 0) {
+                alert("Thanks to your response, I've processed " + num_fixes + " extra days!", "success");
+            }
+            else {
+                alert("Thanks! A bunch of days just got a little closer to completion.", "success");
+            }
+        }
     }
 }

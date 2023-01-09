@@ -378,11 +378,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" disabled>
+                        <input class="form-check-input" type="checkbox" role="switch" id="askQuestions" checked>
                         <label class="form-check-label" for="askQuestions">Ask questions when too many days are unprocessed</label>
                     </div>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="showRunningTotal" checked>
+                        <input class="form-check-input" type="checkbox" role="switch" id="showRunningTotal">
                         <label class="form-check-label" for="showRunningTotal">Show a running end-of-day estimate as you add activities</label>
                     </div>
                 </div>
@@ -402,7 +402,7 @@
         </div>
     </div>
 
-    <!-- Question Modal -->
+    <!-- Question2 Modal -->
     <div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -418,17 +418,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col justify-content-center questionModalCol">
+                        <div class="col justify-content-center questionModalCol"
+                            id="questionEventDiv1">
                             <p id="questionEvent1">Question1?</p>
                             <div class="input-group questionModalInputGroup">
                                 <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral"
-                                        value="~" data-toggle="tooltip" data-placement="top"
+                                        value="~" data-toggle="tooltip" data-placement="top" id="questionEventSign1"
                                         title="Negative numbers are costs, positive numbers recharge.">
-                                <input type="number" class="form-control eventValues"
+                                <input type="number" class="form-control eventValues" id="questionEventValue1"
                                     placeholder="?" min="0" max="100">
                             </div>
                         </div>
-                        <div class="col justify-content-center questionModalCol">
+                        <div class="col justify-content-center questionModalCol"
+                            id="questionEventDiv2">
                             <p id="questionEvent2">Question2?</p>
                             <div class="input-group questionModalInputGroup">
                                 <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral"
