@@ -16,7 +16,7 @@ var current_energy_level = null;
 
 // ----- Settings -----
 var user_options_default = { 
-    ask_questions: false,
+    ask_questions: true,
     show_running_total: false
 }
 var user_options = user_options_default;
