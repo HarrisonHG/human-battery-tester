@@ -10,7 +10,15 @@ import { alert } from './utilities.js'
 */
 
 // How many measurements of an event should we have before we can begin to trust it?
-let EVENT_CONFIDENT_THRESHOLD = 1;
+var EVENT_CONFIDENT_THRESHOLD = 1;
+
+// The types of questions we currently have
+const QUESTION = {
+    ONE_OF_TWO: 1,
+    COMMON_ACTIVITY: 2,
+}
+// How many unprocessed days before we start asking questions?
+var UNPROCESSED_DAY_PATIENCE = 3;
 
 export class Profile {
 
@@ -500,6 +508,66 @@ export class Profile {
             }
         }
 
+
+        
     }
 
+    // If we have too many unprocessed days, we'll ask the user for a pointer
+    // and do more thinking. If we don't, this function will do nothing.
+    ask_user_questions() {
+
+        if (this.days == null || this.days.length == undefined) {
+            // We've got to acknowledge what we have going for us, first
+            this.have_a_good_think();
+        }
+        
+        if (this.days.length < UNPROCESSED_DAY_PATIENCE || this.days.length == 0) {
+            // Have patience, young padawan
+            return;
+        }
+
+        // Sort days by length
+        this.days.sort(function(a, b) {
+            return a.events.length - b.events.length;
+        });
+
+        // Question 1: What is the most popular event in the unprocessed days that exists in the shortest day?
+        let most_popular_event = null;
+        let most_popular_event_count = 0;
+        let shortest_day = this.days[0];
+        for (let event in shortest_day.events) {
+            let event_name = shortest_day.events[event].name;
+            let event_count = 0;
+            for (let day in this.days) {
+                for (let event in this.days[day].events) {
+                    if (this.days[day].events[event].name == event_name) {
+                        event_count++;
+                    }
+                }
+            }
+
+            if (event_count > most_popular_event_count) {
+                most_popular_event = event_name;
+                most_popular_event_count = event_count;
+            }
+        }
+        // Let's ask this question if, say, 50% of the days have the same event
+        if (most_popular_event_count > this.days.length / 2) {
+            let answer = prompt("You've done this activity " + most_popular_event + " a lot recently. Can you value it?");
+            if (answer !== null) {
+                let num_fixes = this.days.length;
+                this.add_or_update_event(most_popular_event, answer);
+                this.have_a_good_think();
+                num_fixes = this.days.length - num_fixes;
+
+                if (num_fixes > 0) {
+                    alert("Thanks to your response, I've processed " + num_fixes + " extra days!");
+                }
+                else {
+                    alert("Thanks! A bunch of days just got a little closer to completion.");
+                }
+            }
+        }
+
+    }
 }

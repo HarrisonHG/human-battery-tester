@@ -880,6 +880,9 @@ document.getElementById("createBackupBtn").addEventListener("click", create_back
 document.getElementById("restoreBackupBtn").addEventListener("click", restore_backup);
 document.getElementById("askQuestions").addEventListener("change", to_ask_or_not_to_ask);
 document.getElementById("showRunningTotal").addEventListener("change", should_we_show_running_total);
+document.getElementById("askAQuestionBtn").addEventListener("click", function() {
+    my_profile.ask_user_questions();
+});
 // document.getElementById("advancedOptions").addEventListener("change", enable_advanced_options);
 
 document.getElementById("batteryLevelStart").addEventListener("change", estimate_activity_energy);
@@ -917,6 +920,8 @@ for (let i = 0; i < posNegSwitches.length; i++) {
         estimate_activity_energy();
     });
 }
+
+
 
 // We want to do a quick save whenever the user leaves the page
 // window.addEventListener("beforeunload", function (e) {

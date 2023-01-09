@@ -138,8 +138,8 @@
                                         <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral eventSigns" 
                                                 value="~" data-toggle="tooltip" data-placement="top" 
                                                 title="Negative numbers are costs, positive numbers recharge.">
-                                        <input type="number" class="form-control eventValues" 
-                                            data-toggle="tooltip" data-placement="top" 
+                                        <input type="number" class="form-control eventValues"
+                                            data-toggle="tooltip" data-placement="top"
                                             title="If you dont know this, leave it black and we'll calculate it for you."
                                             placeholder="?" min="0" max="100">
                                     </div>
@@ -331,6 +331,12 @@
                     </button>
                 </div>
             </div>
+            <div class="col justify-content-center">
+                <!-- <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#questionModal"> -->
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" id="askAQuestionBtn">
+                    Ask me a question!
+                </button>
+            </div>
             <div class="col-auto">
                 <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#optionsModal">
                     Options
@@ -363,11 +369,11 @@
     </footer>
 
     <!-- Options Modal -->
-    <div class="modal fade" id="optionsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="optionsModal" tabindex="-1" aria-labelledby="optionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
+                    <h1 class="modal-title fs-5" id="optionsModalLabel">Options</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -389,6 +395,61 @@
                     <div class="col-auto">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
                             Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="questionModalLabel">Quick Question</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <p id="questionModalQuestion">Can you provide a rough estimate for one 
+                                of these two activities? (We can calculate the other)</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col justify-content-center questionModalCol">
+                            <p id="questionEvent1">Question1?</p>
+                            <div class="input-group questionModalInputGroup">
+                                <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral"
+                                        value="~" data-toggle="tooltip" data-placement="top"
+                                        title="Negative numbers are costs, positive numbers recharge.">
+                                <input type="number" class="form-control eventValues"
+                                    placeholder="?" min="0" max="100">
+                            </div>
+                        </div>
+                        <div class="col justify-content-center questionModalCol">
+                            <p id="questionEvent2">Question2?</p>
+                            <div class="input-group questionModalInputGroup">
+                                <input type="button" class="btn btn-outline-secondary positiveOrNegative neutral"
+                                        value="~" data-toggle="tooltip" data-placement="top"
+                                        title="Negative numbers are costs, positive numbers recharge.">
+                                <input type="number" class="form-control eventValues"
+                                    placeholder="?" min="0" max="100">
+                            </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            id="saveQuestionAnswer">
+                            Save Changes
                         </button>
                     </div>
                 </div>
