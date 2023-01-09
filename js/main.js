@@ -554,6 +554,7 @@ function parse_ui() {
     // Events
     let event_names = document.getElementsByClassName("eventNames");
     let event_numbers = document.getElementsByClassName("eventNumbers");
+    let eventSigns = document.getElementsByClassName("eventSigns");
     let event_values = document.getElementsByClassName("eventValues");
     for (let i = 0; i < event_names.length; i++) {
 
@@ -568,7 +569,9 @@ function parse_ui() {
                 todays_events.push(new Activity(event_names[i].value, "auto"));
             }
             else {
-                todays_events.push(new Activity(event_names[i].value, event_values[i].value));
+                let event_value = eventSigns[i].value == 
+                    "-" ? -event_values[i].value : event_values[i].value;
+                todays_events.push(new Activity(event_names[i].value, event_value));
             }
         }
     }
