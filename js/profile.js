@@ -513,7 +513,8 @@ export class Profile {
     }
 
     // If we have too many unprocessed days, we'll ask the user for a pointer
-    // and do more thinking. If we don't, this function will do nothing.
+    // and do more thinking. 
+    // Returns true if a question has been presented, false otherwise
     ask_user_questions() {
 
         if (this.days == null || this.days.length == undefined) {
@@ -523,7 +524,7 @@ export class Profile {
         
         if (this.days.length < UNPROCESSED_DAY_PATIENCE || this.days.length == 0) {
             // Have patience, young padawan
-            return;
+            return false;
         }
 
         // Sort days by length
@@ -582,6 +583,10 @@ export class Profile {
         if (display_modal) {
             const myModal = new bootstrap.Modal(document.getElementById('questionModal'));
             myModal.show();
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

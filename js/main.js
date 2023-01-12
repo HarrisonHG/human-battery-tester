@@ -741,13 +741,13 @@ function estimate_activity_energy() {
 
         // If we have something, there are some other calculations we can do for the user
         let starting_energy = parseInt(document.getElementById("batteryLevelStart").value);
-        let estimated_ending_energy = starting_energy - total_energy;
+        let estimated_ending_energy = starting_energy + total_energy;
         let estimated_next_morning_energy = 
             parseInt(estimated_ending_energy + my_profile.sleep.estimate_value());
         let next_morning_comment = "";
         
         if (estimated_next_morning_energy < starting_energy) {
-            next_morning_comment = "You're in an energy deficit. Get an extra hour of sleep!";
+            next_morning_comment = "You're in an energy deficit. Recover harder!";
         }
         else if (estimated_next_morning_energy > starting_energy) {
             next_morning_comment = "You're in an energy surplus. Excellent!";   
